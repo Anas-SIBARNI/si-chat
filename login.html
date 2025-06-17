@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - Messagerie</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .auth-container {
+            max-width: 400px;
+            margin: 5rem auto;
+            padding: 2rem;
+            background-color: #27272a;
+            border-radius: 10px;
+            color: white;
+        }
+
+        .auth-container h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .auth-container label {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .auth-container input {
+            width: 100%;
+            padding: 0.8rem;
+            margin-bottom: 1.5rem;
+            border-radius: 5px;
+            background-color: #18181B;
+            color: white;
+            border: 1px solid #444;
+        }
+
+        .auth-container button {
+            width: 100%;
+        }
+
+        .auth-container p {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .auth-container a {
+            color: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        <h2>Connexion</h2>
+        <form id="login-form">
+            <label for="email">Adresse e-mail</label>
+            <input type="email" id="email" required>
+
+            <label for="password">Mot de passe</label>
+            <input type="password" id="password" required>
+
+            <div id="error-message" class="error"></div>
+            <button type="submit" class="btn">Se connecter</button>
+        </form>
+        <p>Pas encore inscrit ? <a href="register.html">Créer un compte</a></p>
+    </div>
+
+    <script>
+        const form = document.getElementById('login-form');
+        const errorMessage = document.getElementById('error-message');
+      
+        form.addEventListener('submit', async function (e) {
+          e.preventDefault();
+      
+          const email = document.getElementById('email').value;
+          const password = document.getElementById('password').value;
+      
+          try {
+            const response = await fetch('http://localhost:3000/login', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ email, password })
+            });
+      
+            const data = await response.json();
+      
+            if (response.ok) {
+                // Enregistre les infos utilisateur dans localStorage
+                localStorage.setItem('userId', data.userId);
+                localStorage.setItem('username', data.username);
+
+// Redirige vers la messagerie
+window.location.href = "messagerie.html";
+            } else {
+              errorMessage.textContent = data.error || "Une erreur est survenue.";
+            }
+      
+          } catch (error) {
+            console.error(error);
+            errorMessage.textContent = "Erreur serveur.";
+          }
+        });
+      </script>
+      
+
+</body>
+</html>
