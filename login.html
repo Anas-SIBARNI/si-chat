@@ -93,8 +93,11 @@
                 localStorage.setItem('userId', data.userId);
                 localStorage.setItem('username', data.username);
 
-// Redirige vers la messagerie
-window.location.href = "messagerie.html";
+                console.log("Enregistré :", data.userId, data.username);
+
+
+                // Redirige vers la messagerie
+                window.location.href = "messagerie.html";
             } else {
               errorMessage.textContent = data.error || "Une erreur est survenue.";
             }
