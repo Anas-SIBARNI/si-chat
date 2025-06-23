@@ -9,17 +9,14 @@
   <div class="container">
     <aside class="sidebar">
       <h3>Messagerie</h3>
+      
       <div id="contact-list-sidebar"></div>
-      <div class="contact-item" style="margin-top:auto; border-top:1px solid #333; position: relative; display: flex; align-items: center;">
-        <div class="avatar"></div>
+      <div class="contact-item" style="margin-top:auto; border-top:1px solid #333;">
+        <div class="pp"></div>
         <span id="username" style="flex: 1;"></span>
-        <span class="settings-icon" onclick="toggleSettingsMenu()">⚙️</span>
+        <a href="parametres.html" class="settings-icon">⚙️</a>
       </div>
-      <div id="settings-menu" class="hidden">
-        <button onclick="editDescription()">Modifier description</button>
-        <button onclick="editPassword()">Modifier mot de passe</button>
-        <button onclick="editEmail()">Modifier email</button>
-      </div>
+      
     </aside>
 
     <main class="main-content hidden" id="contact-section">
@@ -53,7 +50,7 @@
         </form>
       </div>
       <div class="profile-element" id="contact-profile">
-        <div class="avatar"></div>
+        <div class="pp"></div>
         <h4 id="profile-name">Nom</h4>
         <p id="profile-description">Description : description</p>
         <p id="profile-common">Contacts en commun : 0</p>

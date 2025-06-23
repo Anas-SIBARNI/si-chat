@@ -1,4 +1,4 @@
-// script.js complet associé à la messagerie
+// script.js complet associé à la messagerie avec pp corrigée
 
 const userId = localStorage.getItem('userId');
 const username = localStorage.getItem('username');
@@ -30,10 +30,15 @@ function switchTab(tab) {
       <p id="add-result"></p>
     `;
   } else {
-    fetch(`http://localhost:3000/friends/${userId}`)
+    fetch(`http://localhost:3001/friends/${userId}`)
       .then(res => res.json())
       .then(friends => {
-        content.innerHTML = '<ul>' + friends.map(f => `<li>${f.username}</li>`).join('') + '</ul>';
+        const contentList = friends.map(f => `
+          <li>
+            <div class="pp" style="background-image:url('${f.pp || 'default.jpg'}'); background-size:cover; background-position:center;"></div>
+            ${f.username}
+          </li>`).join('');
+        content.innerHTML = '<ul>' + contentList + '</ul>';
       });
   }
 }
@@ -46,7 +51,7 @@ function showContactSection() {
 function addContact(e) {
   e.preventDefault();
   const input = document.getElementById('new-contact').value;
-  fetch('http://localhost:3000/friend-request', {
+  fetch('http://localhost:3001/friend-request', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ senderId: userId, receiverUsername: input })
@@ -63,7 +68,7 @@ function sendMessage(e) {
   const msg = input.value.trim();
   if (!msg || !activeContactId) return;
 
-  fetch('http://localhost:3000/private-message', {
+  fetch('http://localhost:3001/private-message', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -80,7 +85,7 @@ function sendMessage(e) {
 }
 
 function loadContactsInSidebar() {
-  fetch(`http://localhost:3000/friends/${userId}`)
+  fetch(`http://localhost:3001/friends/${userId}`)
     .then(res => res.json())
     .then(friends => {
       const container = document.getElementById('contact-list-sidebar');
@@ -89,17 +94,35 @@ function loadContactsInSidebar() {
         const div = document.createElement('div');
         div.classList.add('contact-item');
         div.innerHTML = `
-          <div class="avatar"></div>
+          <div class="pp"></div>
           <span>${friend.username}</span>
         `;
+        const ppBox = div.querySelector('.pp');
+        if (ppBox) {
+          ppBox.style.backgroundImage = `url('${friend.pp || 'default.jpg'}')`;
+          ppBox.style.backgroundSize = 'cover';
+          ppBox.style.backgroundPosition = 'center';
+        }
         div.onclick = () => loadPrivateDiscussion(friend.id, friend.username);
         container.appendChild(div);
       });
     });
 }
 
+fetch(`http://localhost:3001/user/${userId}`)
+  .then(res => res.json())
+  .then(user => {
+    const mePp = document.querySelector('.contact-item .pp');
+    if (mePp) {
+      mePp.style.backgroundImage = `url(${user.pp || 'default.jpg'})`;
+      mePp.style.backgroundSize = 'cover';
+      mePp.style.backgroundPosition = 'center';
+    }
+  });
+
 function loadPrivateDiscussion(contactId, contactName) {
-  if (contactId === activeContactId) return;
+  if (contactId === activeContactId && document.getElementById('chat-body').children.length > 0) return;
+
   activeContactId = contactId;
   activeContactName = contactName;
 
@@ -107,9 +130,10 @@ function loadPrivateDiscussion(contactId, contactName) {
   document.getElementById('chat-area').classList.remove('hidden');
   document.getElementById('chat-user').textContent = contactName;
 
-  fetch(`http://localhost:3000/private-messages?user1=${userId}&user2=${contactId}`)
+  fetch(`http://localhost:3001/private-messages?user1=${userId}&user2=${contactId}`)
     .then(res => res.json())
     .then(messages => {
+      console.log("Messages récupérés :", messages);
       const chatBody = document.getElementById('chat-body');
       chatBody.innerHTML = '';
       lastMessageIds = messages.map(m => m.id);
@@ -118,23 +142,38 @@ function loadPrivateDiscussion(contactId, contactName) {
         div.classList.add('chat-message');
         div.classList.add(m.sender_id == userId ? 'me' : 'other');
         div.dataset.msgId = m.id;
-        div.textContent = `${m.sender_username} : ${m.content}`;
+        div.innerHTML = `
+          <div class="pp-message" style="background-image: url('${m.sender_pp || 'default.jpg'}');"></div>
+          <div class="text-block">
+            <div class="sender-line">${m.sender_username} :</div>
+            <div class="content-line">${m.content}</div>
+          </div>
+        `;
+
         chatBody.appendChild(div);
       });
       chatBody.scrollTop = chatBody.scrollHeight;
     });
 
-  fetch(`http://localhost:3000/user/${contactId}`)
+  fetch(`http://localhost:3001/user/${contactId}`)
     .then(res => res.json())
     .then(user => {
+      console.log('Données utilisateur :', user);
       document.getElementById('profile-name').textContent = user.username;
       document.getElementById('profile-description').textContent = `Description : ${user.description || 'Aucune description'}`;
+
+      const ppDiv = document.querySelector('#contact-profile .pp');
+      if (ppDiv) {
+        ppDiv.style.backgroundImage = `url(${user.pp || 'default.jpg'})`;
+        ppDiv.style.backgroundSize = 'cover';
+        ppDiv.style.backgroundPosition = 'center';
+      }
     });
 
   if (window.messageRefreshInterval) clearInterval(window.messageRefreshInterval);
   window.messageRefreshInterval = setInterval(() => {
     if (activeContactId === contactId) {
-      fetch(`http://localhost:3000/private-messages?user1=${userId}&user2=${contactId}`)
+      fetch(`http://localhost:3001/private-messages?user1=${userId}&user2=${contactId}`)
         .then(res => res.json())
         .then(messages => {
           const newIds = messages.map(m => m.id);
@@ -171,7 +210,7 @@ function toggleSettingsMenu() {
 function editDescription() {
   const current = prompt("Nouvelle description :");
   if (current === null) return;
-  fetch(`http://localhost:3000/user/${userId}/description`, {
+  fetch(`http://localhost:3001/user/${userId}/description`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ description: current })
@@ -184,7 +223,7 @@ function editDescription() {
 function editPassword() {
   const password = prompt("Nouveau mot de passe :");
   if (!password) return;
-  fetch(`http://localhost:3000/user/${userId}/password`, {
+  fetch(`http://localhost:3001/user/${userId}/password`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ password })
@@ -197,7 +236,7 @@ function editPassword() {
 function editEmail() {
   const email = prompt("Nouvelle adresse email :");
   if (!email) return;
-  fetch(`http://localhost:3000/user/${userId}/email`, {
+  fetch(`http://localhost:3001/user/${userId}/email`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email })

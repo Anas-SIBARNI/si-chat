@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Paramètres</title>
+  <link rel="stylesheet" href="parametres.css">
+</head>
+<body>
+  <div class="settings-container">
+    <aside class="settings-sidebar">
+      <h3>Messagerie</h3>
+      <ul>
+        <li><a href="messagerie.html">Messagerie</a></li>
+        <li class="active">Mon profil</li>
+        <li><a href="#" onclick="logout()">Déconnexion</a></li>
+      </ul>
+    </aside>
+
+    <main class="settings-main">
+      <div class="settings-element">
+        <div class="pp" onclick="changerPP()"></div>
+        <h2 id="settings-username">Nom d'utilisateur</h2>
+
+        <div class="settings-row">
+          <div>
+            <strong>Nom</strong>
+            <p id="display-nom">Anas</p>
+          </div>
+          <button onclick="changerNom()">Changer</button>
+        </div>
+
+        <div class="settings-row">
+          <div>
+            <strong>Adresse mail</strong>
+            <p id="display-email">anas.sibarni@gmail.com</p>
+          </div>
+          <button onclick="changerEmail()">Changer</button>
+        </div>
+
+        <div class="settings-row">
+          <div>
+            <strong>Mot de passe</strong>
+            <p>******************************</p>
+          </div>
+          <button onclick="changerMotDePasse()">Changer</button>
+        </div>
+
+        <button class="danger" onclick="supprimerCompte()">Supprimer mon compte</button>
+      </div>
+    </main>
+  </div>
+
+  <script src="parametres.js"></script>
+</body>
+</html>
