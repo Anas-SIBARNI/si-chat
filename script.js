@@ -21,14 +21,47 @@ function switchTab(tab) {
   const content = document.getElementById('tab-content');
   content.innerHTML = '';
 
-  if (tab === 'add') {
+  if (tab === 'pending') {
+    fetch(`http://localhost:3001/friend-requests/${userId}`)
+      .then(res => res.json())
+      .then(requests => {
+        const content = document.getElementById('tab-content');
+        content.innerHTML = '';
+        requests.forEach(req => {
+          const div = document.createElement('div');
+          div.classList.add('contact-item');
+          div.innerHTML = `
+            <div class="pp" style="background-image:url('${req.sender_pp || 'default.jpg'}'); background-size:cover; background-position:center;"></div>
+            <span>${req.sender_username}</span>
+            <div style="margin-left:auto;">
+              <button onclick="repondreDemande(${req.id}, 'accepte')">✔️</button>
+              <button onclick="repondreDemande(${req.id}, 'refuse')">❌</button>
+            </div>
+          `;
+          content.appendChild(div);
+        });
+      });
+  } else if (tab === 'add') {
     content.innerHTML = `
-      <form class="form-inline" onsubmit="addContact(event)">
-        <input type="text" id="new-contact" placeholder="Entrer le nom d'utilisateur...">
-        <button type="submit">Ajouter</button>
-      </form>
-      <p id="add-result"></p>
-    `;
+      <div class="add-contact-container">
+        <form class="form-inline" onsubmit="addContact(event)">
+          <input type="text" id="new-contact" placeholder="Nom d'utilisateur à ajouter...">
+          <button type="submit">Ajouter</button>
+        </form>
+        <p id="add-result" class="add-result-message"></p>
+      </div>
+    `; 
+  } else if (tab === 'online') {
+    fetch(`http://localhost:3001/friends-online/${userId}`)
+      .then(res => res.json())
+      .then(friends => {
+        const contentList = friends.map(f => `
+          <li>
+            <div class="pp" style="background-image:url('${f.pp || 'default.jpg'}'); background-size:cover; background-position:center;"></div>
+            ${f.username}
+          </li>`).join('');
+        content.innerHTML = '<ul>' + contentList + '</ul>';
+      });
   } else {
     fetch(`http://localhost:3001/friends/${userId}`)
       .then(res => res.json())
@@ -39,9 +72,8 @@ function switchTab(tab) {
             ${f.username}
           </li>`).join('');
         content.innerHTML = '<ul>' + contentList + '</ul>';
-      });
-  }
-}
+      });};}
+
 
 function showContactSection() {
   document.getElementById('contact-section').classList.remove('hidden');
@@ -246,9 +278,32 @@ function editEmail() {
     .catch(() => alert("Erreur"));
 }
 
+
+function repondreDemande(id, reponse) {
+  fetch('http://localhost:3001/friend-request/respond', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ requestId: id, response: reponse })
+  })
+    .then(res => res.json())
+    .then(() => {
+      alert(`Demande ${reponse === 'accepte' ? 'acceptée' : 'refusée'}`);
+      switchTab('pending');
+    });
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('chat-user').textContent = "Discussion privée la plus récente";
   document.getElementById('contact-section').classList.add('hidden');
   document.getElementById('chat-area').classList.remove('hidden');
   loadContactsInSidebar();
 });
+
+
+function logout() {
+  fetch(`http://localhost:3001/logout/${userId}`, { method: 'POST' })
+    .then(() => {
+      localStorage.clear();
+      window.location.href = 'login.html';
+    });
+}
