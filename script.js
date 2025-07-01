@@ -474,6 +474,13 @@ function openGroupChat(groupId, groupName) {
     profile.innerHTML = `
       <h4>Membres du groupe</h4>
       <ul class="group-members-list"></ul>
+      <div id="group-settings-menu" class="group-settings">
+        <h5>Paramètres</h5>
+        <button onclick="changeGroupName(${groupId})">Renommer</button>
+        <button onclick="removeMemberPrompt(${groupId})">Retirer un membre</button>
+        <button onclick="quitGroup(${groupId})">Quitter le groupe</button>
+        <button onclick="deleteGroup(${groupId})">Supprimer le groupe</button>
+      </div>
     `;
     const list = profile.querySelector('.group-members-list');
     members.forEach(m => {
@@ -492,4 +499,62 @@ function openGroupChat(groupId, groupName) {
     });
   });
 
+}
+
+function changeGroupName(groupId) {
+  const newName = prompt("Nouveau nom du groupe :");
+  if (!newName) return;
+
+  fetch(`http://localhost:3001/groups/${groupId}/rename`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: newName })
+  })
+    .then(res => res.json())
+    .then(() => openGroupChat(groupId, newName))
+    .catch(() => alert("Erreur lors du renommage"));
+}
+function removeMemberPrompt(groupId) {
+  const username = prompt("Nom d'utilisateur à retirer :");
+  if (!username) return;
+
+  fetch(`http://localhost:3001/groups/${groupId}/remove`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username })
+  })
+    .then(res => res.json())
+    .then(data => {
+      alert(data.message || "Membre retiré");
+      openGroupChat(groupId, document.getElementById('chat-user').textContent);
+    })
+    .catch(() => alert("Erreur lors du retrait"));
+}
+function quitGroup(groupId) {
+  if (!confirm("Tu es sûr de vouloir quitter ce groupe ?")) return;
+
+  fetch(`http://localhost:3001/groups/${groupId}/quit`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId })
+  })
+    .then(res => res.json())
+    .then(() => {
+      alert("Tu as quitté le groupe.");
+      location.reload();
+    })
+    .catch(() => alert("Erreur"));
+}
+function deleteGroup(groupId) {
+  if (!confirm("Supprimer ce groupe ?")) return;
+
+  fetch(`http://localhost:3001/groups/${groupId}/delete`, {
+    method: 'DELETE'
+  })
+    .then(res => res.json())
+    .then(() => {
+      alert("Groupe supprimé.");
+      location.reload();
+    })
+    .catch(() => alert("Erreur"));
 }

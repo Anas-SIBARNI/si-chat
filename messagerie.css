@@ -542,3 +542,31 @@ html, body {
   gap: 0.75rem;
   margin-bottom: 0.75rem;
 }
+.group-settings {
+  margin-top: 2rem;
+  border-top: 1px solid #333;
+  padding-top: 1rem;
+}
+
+.group-settings h5 {
+  margin-bottom: 0.75rem;
+  color: #aaa;
+  font-size: 1rem;
+}
+
+.group-settings button {
+  display: block;
+  margin-bottom: 0.5rem;
+  background-color: #2c2c30;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+}
+
+.group-settings button:hover {
+  background-color: #3b3b40;
+}
