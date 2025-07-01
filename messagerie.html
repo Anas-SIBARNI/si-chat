@@ -4,12 +4,15 @@
   <meta charset="UTF-8">
   <title>Messagerie</title>
   <link rel="stylesheet" href="messagerie.css">
+  
+  
 </head>
 <body>
   <div class="container">
     <aside class="sidebar">
       <h3>Messagerie</h3>
       <button class="btn" onclick="showContactSection()" style="margin: 1rem;">Contacts</button>
+
       <div id="contact-list-sidebar"></div>
       <div class="contact-item" style="margin-top:auto; border-top:1px solid #333;">
         <div class="pp"></div>
@@ -18,19 +21,21 @@
       </div>
     </aside>
 
+
+
     <main class="main-content hidden" id="contact-section">
       <div class="tabs">
         <div class="nav">
-          <button id="tab-contacts" class="active" onclick="switchTab('contacts')">Contacts</button>
           <button id="tab-online" onclick="switchTab('online')">En ligne</button>
           <button id="tab-all" onclick="switchTab('all')">Tous</button>
           <button id="tab-pending" onclick="switchTab('pending')">En attente</button>
+          <button id="tab-groups" onclick="switchTab('groups')">Nouveau groupe</button>
         </div>
         <div class="add-btn">
           <button onclick="switchTab('add')">Ajouter</button>
         </div>
       </div>
-
+      
       <div class="tab-content" id="tab-content">
         <!-- Contenu dynamique ici -->
       </div>
