@@ -31,7 +31,7 @@ function switchTab(tab) {
           const div = document.createElement('div');
           div.classList.add('contact-item');
           div.innerHTML = `
-            <div class="pp" style="background-image:url('${req.sender_pp || 'default.jpg'}'); background-size:cover; background-position:center;"></div>
+            <div class="pp" style="background-image:url('${req.sender_pp || '../img/default.jpg'}'); background-size:cover; background-position:center;"></div>
             <span>${req.sender_username}</span>
             <div style="margin-left:auto;">
               <button onclick="repondreDemande(${req.id}, 'accepte')">✔️</button>
@@ -57,7 +57,7 @@ function switchTab(tab) {
       .then(friends => {
         const contentList = friends.map(f => `
           <li>
-            <div class="pp" style="background-image:url('${f.pp || 'default.jpg'}'); background-size:cover; background-position:center;"></div>
+            <div class="pp" style="background-image:url('${f.pp || '../img/default.jpg'}'); background-size:cover; background-position:center;"></div>
             ${f.username}
           </li>`).join('');
         content.innerHTML = '<ul>' + contentList + '</ul>';
@@ -75,7 +75,7 @@ function switchTab(tab) {
       .then(friends => {
         const contentList = friends.map(f => `
           <li>
-            <div class="pp" style="background-image:url('${f.pp || 'default.jpg'}'); background-size:cover; background-position:center;"></div>
+            <div class="pp" style="background-image:url('${f.pp || '../img/default.jpg'}'); background-size:cover; background-position:center;"></div>
             ${f.username}
           </li>`).join('');
         content.innerHTML = '<ul>' + contentList + '</ul>';
@@ -139,7 +139,7 @@ function loadContactsInSidebar() {
           <span>${friend.username}</span>
         `;
         const ppBox = div.querySelector('.pp');
-        ppBox.style.backgroundImage = `url('${friend.pp || 'default.jpg'}')`;
+        ppBox.style.backgroundImage = `url('${friend.pp || '../img/default.jpg'}')`;
         ppBox.style.backgroundSize = 'cover';
         ppBox.style.backgroundPosition = 'center';
         div.onclick = () => loadPrivateDiscussion(friend.id, friend.username);
@@ -170,7 +170,7 @@ fetch(`http://localhost:3001/user/${userId}`)
   .then(user => {
     const mePp = document.querySelector('.contact-item .pp');
     if (mePp) {
-      mePp.style.backgroundImage = `url(${user.pp || 'default.jpg'})`;
+      mePp.style.backgroundImage = `url(${user.pp || '../img/default.jpg'})`;
       mePp.style.backgroundSize = 'cover';
       mePp.style.backgroundPosition = 'center';
     }
@@ -199,7 +199,7 @@ function loadPrivateDiscussion(contactId, contactName) {
         div.classList.add(m.sender_id == userId ? 'me' : 'other');
         div.dataset.msgId = m.id;
         div.innerHTML = `
-          <div class="pp-message" style="background-image: url('${m.sender_pp || 'default.jpg'}');"></div>
+          <div class="pp-message" style="background-image: url('${m.sender_pp || '../img/default.jpg'}');"></div>
           <div class="text-block">
             <div class="sender-line">${m.sender_username} :</div>
             <div class="content-line">${m.content}</div>
@@ -220,7 +220,7 @@ function loadPrivateDiscussion(contactId, contactName) {
 
       const ppDiv = document.querySelector('#contact-profile .pp');
       if (ppDiv) {
-        ppDiv.style.backgroundImage = `url(${user.pp || 'default.jpg'})`;
+        ppDiv.style.backgroundImage = `url(${user.pp || '../img/default.jpg'})`;
         ppDiv.style.backgroundSize = 'cover';
         ppDiv.style.backgroundPosition = 'center';
       }
@@ -377,7 +377,7 @@ function showNewGroupForm() {
 
         label.innerHTML = `
           <input type="checkbox" name="group-members" value="${f.id}" style="margin-right: 0.5rem;">
-          <div class="pp" style="background-image:url('${f.pp || 'default.jpg'}'); background-size:cover; background-position:center; margin-right: 0.5rem;"></div>
+          <div class="pp" style="background-image:url('${f.pp || '../img/default.jpg'}'); background-size:cover; background-position:center; margin-right: 0.5rem;"></div>
           <span>${f.username}</span>
         `;
 
@@ -446,7 +446,7 @@ function openGroupChat(groupId, groupName) {
         const div = document.createElement('div');
         div.classList.add('chat-message', m.sender_id == userId ? 'me' : 'other');
         div.innerHTML = `
-          <div class="pp-message" style="background-image: url('${m.sender_pp || 'default.jpg'}');"></div>
+          <div class="pp-message" style="background-image: url('${m.sender_pp || '../img/default.jpg'}');"></div>
           <div class="text-block">
             <div class="sender-line">${m.sender_username} :</div>
             <div class="content-line">${m.content}</div>
@@ -490,7 +490,7 @@ function openGroupChat(groupId, groupName) {
       li.style.alignItems = 'center';
       li.style.marginBottom = '0.75rem';
       li.innerHTML = `
-        <div class="pp" style="background-image:url('${m.pp || 'default.jpg'}'); background-size:cover; background-position:center; margin-right:0.75rem;"></div>
+        <div class="pp" style="background-image:url('${m.pp || '../img/default.jpg'}'); background-size:cover; background-position:center; margin-right:0.75rem;"></div>
         <div>
           <strong>${m.username}</strong><br>
           <span style="font-size: 0.85rem; color: #aaa;">${m.description || 'Aucune description'}</span>

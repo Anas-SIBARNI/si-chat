@@ -1,0 +1,180 @@
+.group-form-container {
+  width: 100%;
+  flex: 1;
+  background-color: #1f1f23;
+  padding: 2rem;
+  border-radius: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.group-form-container h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.group-form {
+  max-width: 800px;
+  margin: 0;
+}
+
+.group-form input {
+  padding: 0.6rem 1rem;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background-color: #2c2c30;
+  color: white;
+}
+
+.group-form button {
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  transition: all 0.2s ease-in-out;
+}
+
+.group-form button:hover {
+  background: linear-gradient(135deg, #1e40af, #2563eb);
+  transform: scale(1.03);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+}
+
+.group-form-container {
+  background-color: #1f1f23;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+
+.group-form-container h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: white;
+}
+
+.group-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.group-form input {
+  padding: 0.6rem 1rem;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background-color: #2c2c30;
+  color: white;
+}
+
+.group-form button {
+  align-self: flex-start;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.group-form button:hover {
+  background-color: #1e40af;
+}
+
+.group-new-result {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  color: #ccc;
+}
+
+.group-list-container {
+  background-color: #1f1f23;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 2rem;
+  border-top: 1px solid #333;
+
+}
+
+.group-list-container h4 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: white;
+}
+.group-list-container .contact-item:hover {
+  background-color: #2c2c30;
+  transition: background 0.2s ease;
+}
+
+.group-members-list {
+  list-style: none;
+  padding: 0;
+  margin-top: 1rem;
+}
+
+.group-members-list li .pp {
+  width: 40px;
+  height: 40px;
+}
+.contact-checkbox-list label {
+  cursor: pointer;
+  color: white;
+}
+
+.contact-checkbox-list input[type="checkbox"] {
+  transform: scale(1.2);
+}
+.group-members-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.group-options {
+  position: relative;
+  display: inline-block;
+  margin-left: 0.5rem;
+}
+
+.group-options button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.3rem;
+  cursor: pointer;
+}
+
+#group-options-menu {
+  position: absolute;
+  top: 2.2rem;
+  right: 0;
+  background-color: #1f1f23;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 0.3rem 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  z-index: 100;
+  min-width: 180px;
+}
+
+#group-options-menu button {
+  background: none;
+  border: none;
+  color: white;
+  text-align: left;
+  font-size: 0.9rem;
+  padding: 0.4rem 1rem;
+  width: 100%;
+  cursor: pointer;
+}
+
+#group-options-menu button:hover {
+  background-color: #333;
+}

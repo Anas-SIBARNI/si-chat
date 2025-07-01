@@ -1,0 +1,112 @@
+.tabs {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background-color: #1f1f23;
+  border-bottom: 1px solid #333;
+}
+.tabs .nav button,
+.tabs .add-btn button {
+  background-color: transparent;
+  color: white;
+  border: none;
+  margin-right: 1rem;
+  padding: 0.5rem 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: border 0.2s, color 0.2s;
+}
+.tabs .nav button.active {
+  border-bottom: 2px solid #2563eb;
+  color: #2563eb;
+}
+.tabs .nav button:hover,
+.tabs .add-btn button:hover {
+  color: #2563eb;
+}
+
+.tab-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.tab-content ul li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  background-color: #2a2a2e;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.tab-content ul li:hover {
+  background-color: #3b3b40;
+}
+
+.tab-content .pp {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.add-contact-container {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.form-inline {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.form-inline input {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background-color: #1f1f23;
+  color: white;
+}
+
+.form-inline button {
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.form-inline button:hover {
+  background-color: #1e40af;
+}
+
+.add-result-message {
+  margin-top: 1rem;
+  font-size: 0.95rem;
+  color: #ccc;
+}
+#tab-content {
+  flex: 1;
+  padding: 2rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
