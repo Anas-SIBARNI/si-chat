@@ -57,6 +57,10 @@ html, body {
   padding: 1rem;
   border-bottom: 1px solid #333;
   background-color: #1f1f23;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .chat-body {
@@ -542,31 +546,45 @@ html, body {
   gap: 0.75rem;
   margin-bottom: 0.75rem;
 }
-.group-settings {
-  margin-top: 2rem;
-  border-top: 1px solid #333;
-  padding-top: 1rem;
+
+.group-options {
+  position: relative;
+  display: inline-block;
+  margin-left: 0.5rem;
 }
 
-.group-settings h5 {
-  margin-bottom: 0.75rem;
-  color: #aaa;
-  font-size: 1rem;
-}
-
-.group-settings button {
-  display: block;
-  margin-bottom: 0.5rem;
-  background-color: #2c2c30;
-  color: white;
+.group-options button {
+  background: none;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  width: 100%;
-  text-align: left;
+  color: white;
+  font-size: 1.3rem;
   cursor: pointer;
 }
 
-.group-settings button:hover {
-  background-color: #3b3b40;
+#group-options-menu {
+  position: absolute;
+  top: 2.2rem;
+  right: 0;
+  background-color: #1f1f23;
+  border: 1px solid #444;
+  border-radius: 6px;
+  padding: 0.3rem 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+  z-index: 100;
+  min-width: 180px;
+}
+
+#group-options-menu button {
+  background: none;
+  border: none;
+  color: white;
+  text-align: left;
+  font-size: 0.9rem;
+  padding: 0.4rem 1rem;
+  width: 100%;
+  cursor: pointer;
+}
+
+#group-options-menu button:hover {
+  background-color: #333;
 }

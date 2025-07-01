@@ -45,6 +45,16 @@
       <div class="chat-left">
         <div class="chat-header">
           <strong id="chat-user">Chargement...</strong>
+          <div class="group-options">
+            <button id="group-options-toggle">⋮</button>
+            <div id="group-options-menu" class="hidden">
+              <button onclick="changeGroupName(activeGroupId)">Renommer</button>
+              <button onclick="removeMemberPrompt(activeGroupId)">Retirer un membre</button>
+              <button onclick="quitGroup(activeGroupId)">Quitter le groupe</button>
+              <button onclick="deleteGroup(activeGroupId)">Supprimer le groupe</button>
+            </div>
+          </div>
+
         </div>
         <div class="chat-body" id="chat-body">
           <!-- Messages ici -->

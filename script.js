@@ -420,8 +420,16 @@ function showGroupSection() {
 }
 
 function openGroupChat(groupId, groupName) {
+  activeGroupId = groupId; // nécessaire pour les actions du menu
+
   activeContactId = null;
   document.getElementById('chat-user').textContent = `[Groupe] ${groupName}`;
+  document.getElementById('group-options-toggle').onclick = () => {
+    const menu = document.getElementById('group-options-menu');
+    menu.classList.toggle('hidden');
+  };
+  
+
   document.getElementById('contact-section').classList.add('hidden');
   document.querySelectorAll('.tabs .nav button').forEach(btn => btn.classList.remove('active'));
   document.getElementById('tab-content').innerHTML = '';
@@ -474,13 +482,6 @@ function openGroupChat(groupId, groupName) {
     profile.innerHTML = `
       <h4>Membres du groupe</h4>
       <ul class="group-members-list"></ul>
-      <div id="group-settings-menu" class="group-settings">
-        <h5>Paramètres</h5>
-        <button onclick="changeGroupName(${groupId})">Renommer</button>
-        <button onclick="removeMemberPrompt(${groupId})">Retirer un membre</button>
-        <button onclick="quitGroup(${groupId})">Quitter le groupe</button>
-        <button onclick="deleteGroup(${groupId})">Supprimer le groupe</button>
-      </div>
     `;
     const list = profile.querySelector('.group-members-list');
     members.forEach(m => {
