@@ -1,7 +1,8 @@
-const userId = localStorage.getItem('userId');
+// const PARAM_USER_ID = localStorage.getItem('userId');
+const PARAM_USER_ID = window.userId || localStorage.getItem('userId');
 const username = localStorage.getItem('username');
 
-if (!userId || !username) {
+if (!PARAM_USER_ID || !username) {
   alert("Veuillez vous connecter.");
   window.location.href = "login.html";
 }
@@ -12,7 +13,7 @@ document.getElementById("display-nom").textContent = username;
 function changerNom() {
   const nouveau = prompt("Entrer un nouveau nom :", username);
   if (!nouveau) return;
-  fetch(`http://localhost:3001/user/${userId}/name`, {
+  fetch(`http://localhost:3001/user/${PARAM_USER_ID}/name`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username: nouveau })
@@ -29,7 +30,7 @@ function changerNom() {
 function changerEmail() {
   const email = prompt("Entrer un nouvel email :");
   if (!email) return;
-  fetch(`http://localhost:3001/user/${userId}/email`, {
+  fetch(`http://localhost:3001/user/${PARAM_USER_ID}/email`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ email })
@@ -44,7 +45,7 @@ function changerEmail() {
 function changerMotDePasse() {
   const mdp = prompt("Entrer un nouveau mot de passe :");
   if (!mdp) return;
-  fetch(`http://localhost:3001/user/${userId}/password`, {
+  fetch(`http://localhost:3001/user/${PARAM_USER_ID}/password`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ password: mdp })
@@ -55,7 +56,7 @@ function changerMotDePasse() {
 
 function supprimerCompte() {
   if (!confirm("Êtes-vous sûr de vouloir supprimer votre compte ?")) return;
-  fetch(`http://localhost:3001/user/${userId}`, {
+  fetch(`http://localhost:3001/user/${PARAM_USER_ID}`, {
     method: 'DELETE'
   })
     .then(res => res.json())
@@ -75,7 +76,7 @@ function logout() {
 function changerPP() {
   const url = prompt("Entrer l'URL de votre nouvelle pp :");
   if (!url) return;
-  fetch(`http://localhost:3001/user/${userId}/pp`, {
+  fetch(`http://localhost:3001/user/${PARAM_USER_ID}/pp`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ pp: url })
