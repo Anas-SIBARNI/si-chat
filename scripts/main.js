@@ -1,471 +1,409 @@
-/* ============================
-   Variables & état global
-============================ */
-const userId   = localStorage.getItem("userId");
-window.userId = userId; // <-- expose pour les autres scripts (UI, contacts, groups)
 
-const username = localStorage.getItem("username");
+/* =====================================================
+   main.js — cœur de l'app
+   - Navigation (Messages / Groupes / Contacts / Paramètres)
+   - Messagerie privée (historique + temps réel Socket.IO)
+   - Messagerie de groupe (historique + temps réel)
+   - Intégration avec les scripts contacts.js / groups.js / ui.js
+   - Ouverture automatique de la 1ʳᵉ discussion quand on clique « Messages »
+   - Raccourcis robustes pour les sélecteurs du DOM (tolère variations d'IDs)
+   - Conserve l’API REST de serveur_auth.js
+===================================================== */
 
-let activeGroupId   = null;
-let activeContactId = null;
+/* ------------------------
+   Contexte / constantes
+------------------------ */
+(function () {
+  const API = "http://localhost:3001";
 
-window.activeContactId = null;
-window.activeGroupId   = null;
+  // Utilisateur courant
+  const userId   = parseInt(localStorage.getItem("userId") || "0", 10);
+  const username = localStorage.getItem("username") || "Moi";
 
-// Petit cache { userId -> { username, pp } } pour éviter de refetcher
-const userCache = new Map();
-
-// Placeholder d’image si pas de PP fournie
-const DEFAULT_PP = "img/default.jpg"; // adapte si ton chemin est différent
-
-/* ============================
-   initialisation
-============================ */
-if (!userId || !username) {
-  alert("Veuillez vous connecter.");
-  window.location.href = "login.html";
-}
-
-// Affichage du nom dans l’UI
-const usernameEl = document.getElementById("username");
-if (usernameEl) usernameEl.textContent = username;
-
-// Précharge mon profil (PP)
-preloadSelfProfile();
-
-/* ============================
-   Helpers UI
-============================ */
-// Renvoie true si l’utilisateur est proche du bas (permet de ne pas forcer le scroll si la personne remonte l’historique)
-function isNearBottom(el, threshold = 80) {
-  return el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
-}
-
-// Scroll en bas (option smooth)
-function scrollChatToBottom({ smooth = true } = {}) {
-  const chatBody = document.getElementById("chat-body");
-  if (!chatBody) return;
-  // Utilise requestAnimationFrame pour laisser le DOM finir de se peindre
-  requestAnimationFrame(() => {
-    chatBody.scrollTo({
-      top: chatBody.scrollHeight,
-      behavior: smooth ? "smooth" : "auto",
-    });
-  });
-}
-
-/* ============================
-   Chargement contacts & écran
-============================ */
-/* ------- Boot UI: affiche la colonne contacts et charge la liste ------- */
-function bootUI() {
-  const chatUserEl = document.getElementById("chat-user");
-  if (chatUserEl) chatUserEl.textContent = "Discussion privée la plus récente";
-
-  // Au démarrage : on montre les contacts, on cache le chat
-  document.getElementById("contact-section")?.classList.remove("hidden");
-  document.getElementById("chat-area")?.classList.add("hidden");
-
-  if (typeof loadContacts === "function") {
-    console.debug("[bootUI] loadContacts() trouvé -> appel");
-    loadContacts();
-  } else {
-    console.debug("[bootUI] loadContacts() absent -> fallback local");
-    fallbackLoadContacts();
+  if (!userId) {
+    console.warn("[main] Aucun userId dans localStorage — redirection possible vers login.html");
   }
 
-  // Sécurité : lier immédiatement le formulaire s'il est déjà dans le DOM
-  document.getElementById("chat-form")?.addEventListener("submit", sendMessage);
-}
+  /* ------------------------
+     Sélecteurs (robustes)
+  ------------------------ */
+  const el = {
+    // Zones
+    sidebar:      () => document.querySelector(".sidebar") || document.getElementById("sidebar"),
+    contactPanel: () => document.getElementById("contact-section") || document.querySelector(".contacts-panel"),
+    chatArea:     () => document.getElementById("chat-area") || document.querySelector(".chat-area") || document.querySelector(".chat"),
 
-// Démarrer après que TOUT soit chargé (HTML + autres scripts)
-window.addEventListener("load", bootUI);
+    // Chat
+    chatHeader:   () => document.getElementById("chat-user") || document.querySelector(".chat-header .title") || document.querySelector(".chat-header"),
+    chatBody:     () => document.getElementById("chat-body") || document.querySelector(".chat-body"),
+    messageForm:  () => document.getElementById("message-form") || document.querySelector(".chat-footer form") || document.querySelector("#chat-form"),
+    messageInput: () => document.getElementById("message-input") || document.querySelector(".chat-footer input, #chat-form input"),
 
-// Sécurité : si contacts.js arrive un peu après, on retente ~2s
-let _contactsRetry = 0;
-const _contactsTimer = setInterval(() => {
-  if (typeof loadContacts === "function") {
-    clearInterval(_contactsTimer);
-    if (_contactsRetry > 0) {
-      console.debug("[bootUI] loadContacts() enfin dispo -> appel tardif");
-      loadContacts();
-    }
-  } else if (++_contactsRetry > 20) { // ~2s
-    clearInterval(_contactsTimer);
-  }
-}, 100);
+    // Nav
+    btnMessages:  () => document.getElementById("btn-messages") || document.querySelector('[data-nav="messages"]') || document.querySelector(".nav-messages"),
+    btnGroups:    () => document.getElementById("btn-groups")   || document.querySelector('[data-nav="groups"]')   || document.querySelector(".nav-groups"),
+    btnContacts:  () => document.getElementById("btn-contacts") || document.querySelector('[data-nav="contacts"]') || document.querySelector(".nav-contacts"),
+    btnSettings:  () => document.getElementById("btn-settings") || document.querySelector('[data-nav="settings"]') || document.querySelector(".nav-settings"),
 
-/* --------- Fallback: charge les amis si contacts.js n'est pas dispo --------- */
-function ensureDiscussionsContainer() {
-  // 1) Ids probables
-  let el =
-    document.getElementById("discussions-list") ||
-    document.getElementById("contacts-list") ||
-    document.getElementById("conversations-list");
+    // Liste
+    contactList:  () => document.getElementById("contact-list") || document.querySelector(".contact-list") || document.querySelector("#user-conversations-list"),
+  };
 
-  if (el) return el;
+  /* ------------------------
+     État global (exposé)
+  ------------------------ */
+  let socket = null;
+  let activeContactId = null;   // conversation privée ouverte
+  let activeGroupId   = null;   // conversation de groupe ouverte
 
-  // 2) À défaut, crée sous le titre "Discussions"
-  const headings = Array.from(document.querySelectorAll("h1,h2,h3,h4"));
-  const host = headings.find(h => /discussions/i.test(h.textContent))?.parentElement;
-
-  if (host) {
-    el = document.createElement("div");
-    el.id = "discussions-list";
-    host.appendChild(el);
-    return el;
-  }
-
-  // 3) Dernier recours : la sidebar
-  const sidebar = document.querySelector(".contacts") || document.querySelector(".sidebar") || document.body;
-  el = document.createElement("div");
-  el.id = "discussions-list";
-  sidebar.appendChild(el);
-  return el;
-}
-
-async function fallbackLoadContacts() {
-  try {
-    const listEl = ensureDiscussionsContainer();
-    listEl.innerHTML = `<div style="padding:.6rem;color:#9aa3b2">Chargement…</div>`;
-
-    const res = await fetch(`http://localhost:3001/friends/${userId}`);
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    const friends = await res.json();
-
-    listEl.innerHTML = "";
-    if (!Array.isArray(friends) || friends.length === 0) {
-      listEl.innerHTML = `<div style="padding:.8rem;color:#9aa3b2">Aucun contact pour le moment</div>`;
-      return;
-    }
-
-    friends.forEach((f) => {
-      const item = document.createElement("div");
-      item.className = "contact-item";
-      item.style.cssText =
-        "display:flex;align-items:center;gap:.6rem;padding:.6rem 1rem;cursor:pointer;border-radius:10px;";
-      const pp = (f.pp || "img/default.jpg").replace(/"/g, "&quot;");
-      const name = String(f.username || "").replace(/</g, "&lt;");
-
-      item.innerHTML = `
-        <div class="pp" style="
-          width:40px;height:40px;border-radius:50%;
-          background-size:cover;background-position:center;
-          background-image:url('${pp}');
-        "></div>
-        <div style="display:flex;flex-direction:column;">
-          <div style="color:#fff;font-weight:600">${name}</div>
-          <div style="color:#9aa3b2;font-size:.85rem">Hors ligne</div>
-        </div>
-      `;
-
-      item.addEventListener("click", () => {
-        activeContactId = f.id;
-        window.activeContactId = f.id;
-        loadPrivateDiscussion(f.id, f.username || "Contact");
-        document.getElementById("contact-section")?.classList.add("hidden");
-        document.getElementById("chat-area")?.classList.remove("hidden");
-      });
-
-      item.addEventListener("mouseenter", () => item.style.background = "rgba(255,255,255,0.05)");
-      item.addEventListener("mouseleave", () => item.style.background = "transparent");
-
-      listEl.appendChild(item);
-    });
-  } catch (err) {
-    console.error("fallbackLoadContacts() erreur:", err);
-    const listEl = ensureDiscussionsContainer();
-    listEl.innerHTML = `<div style="padding:.8rem;color:#ef4444">Impossible de charger les contacts</div>`;
-  }
-}
-
-
-/* ============================
-   Socket.IO
-============================ */
-const socket = io("http://localhost:3001");
-
-// S’enregistrer côté serveur dans une room dédiée
-socket.emit("registerUser", userId);
-console.log("✅ registerUser envoyé pour", userId);
-
-// Réception d’un message privé en live
-socket.on("privateMessage", async (data) => {
-  console.log("🔔 message privé reçu via socket:", data);
-
-  // Si le chat actif correspond, on affiche
-  const isForActiveChat =
-    parseInt(window.activeContactId) === data.senderId ||
-    parseInt(window.activeContactId) === data.receiverId;
-
-  // Enrichit PP si manquante
-  if (!data.sender_pp) {
-    const u = await getUserProfileSafe(data.senderId);
-    if (u?.pp) data.sender_pp = u.pp;
-  }
-
-  if (isForActiveChat) {
-    const chatBody = document.getElementById("chat-body");
-    const shouldStick = isNearBottom(chatBody);
-    displayMessage(data);
-    if (shouldStick || data.senderId == userId) scrollChatToBottom();
-  } else {
-    // Si je suis destinataire et que ce n’est pas la discussion ouverte, on ouvre automatiquement
-    if (parseInt(userId) === data.receiverId && parseInt(window.activeContactId) !== data.senderId) {
-      await loadPrivateDiscussion(data.senderId, data.sender);
-      document.getElementById("contact-section")?.classList.add("hidden");
-      document.getElementById("chat-area")?.classList.remove("hidden");
-    }
-  }
-});
-
-// Réception d’un message de groupe
-socket.on("groupMessage", async (data) => {
-  console.log("🔔 message de groupe reçu via socket :", data);
-  if (parseInt(window.activeGroupId) !== data.groupId) return;
-
-  if (!data.sender_pp) {
-    const u = await getUserProfileSafe(data.senderId);
-    if (u?.pp) data.sender_pp = u.pp;
-  }
-
-  const chatBody = document.getElementById("chat-body");
-  const shouldStick = isNearBottom(chatBody);
-  displayMessage(data);
-  if (shouldStick || data.senderId == userId) scrollChatToBottom();
-});
-
-/* ============================
-   Envoi d’un message
-============================ */
-function sendMessage(e) {
-  e.preventDefault();
-  const input = document.getElementById("message-input");
-  if (!input) return;
-
-  const content = input.value.trim();
-  if (!content) return;
-
-  if (activeContactId) {
-    // Message privé
-    socket.emit("privateMessage", {
-      senderId: parseInt(userId),
-      receiverId: parseInt(activeContactId),
-      content,
-      timestamp: new Date().toISOString(),
-      sender: username,                     // pour l’affichage
-      sender_pp: userCache.get(+userId)?.pp // on envoie aussi ma PP pour accélérer côté récepteur
-    });
-  } else if (activeGroupId) {
-    // Message groupe
-    socket.emit("groupMessage", {
-      senderId: parseInt(userId),
-      groupId: parseInt(activeGroupId),
-      content,
-      timestamp: new Date().toISOString(),
-      sender: username,
-      sender_pp: userCache.get(+userId)?.pp
-    });
-  }
-
-  input.value = "";
-}
-
-/* ============================
-   Affichage d’un message (DOM)
-============================ */
-function displayMessage(data) {
-  const chatBody = document.getElementById("chat-body");
-  if (!chatBody) return;
-
-  const mine = String(data.senderId) === String(userId);
-  const wrapper = document.createElement("div");
-  wrapper.classList.add("chat-message", mine ? "me" : "other");
-
-  // Détermine l’URL PP (live: data.sender_pp; historique: m.sender_pp; fallback cache/DEFAULT_PP)
-  const ppUrl =
-    data.sender_pp ||
-    data.pp || // backup si un autre nom est déjà utilisé dans tes autres fonctions
-    userCache.get(+data.senderId)?.pp ||
-    DEFAULT_PP;
-
-  // Bulle
-  wrapper.innerHTML = `
-    <div class="pp-message" style="background-image:url('${escapeHtml(ppUrl)}');"></div>
-    <div class="text-block">
-      <div class="sender-line">${escapeHtml(data.sender || "")}${data.sender ? " :" : ""}</div>
-      <div class="content-line">${escapeHtml(data.content)}</div>
-    </div>
-  `;
-
-  chatBody.appendChild(wrapper);
-}
-
-/* ============================
-   Ouvrir un privé & charger l’historique
-============================ */
-async function loadPrivateDiscussion(contactId, contactName) {
-  activeGroupId = null;
-  activeContactId = contactId;
-  window.activeGroupId = null;
-  window.activeContactId = contactId;
-
-  // Titre
-  const chatUserEl = document.getElementById("chat-user");
-  if (chatUserEl) chatUserEl.textContent = contactName;
-
-  // Switch d’écran
-  document.getElementById("contact-section")?.classList.add("hidden");
-  document.getElementById("chat-area")?.classList.remove("hidden");
-
-  // Historique
-  const chatBody = document.getElementById("chat-body");
-  if (chatBody) chatBody.innerHTML = "";
-
-  try {
-    // ⚠️ Backend: /private-messages?user1=..&user2=..
-    const res  = await fetch(`http://localhost:3001/private-messages?user1=${userId}&user2=${contactId}`);
-    const list = await res.json();
-
-    // Hydrate le cache minimal pour ces expéditeurs
-    for (const m of list) {
-      if (m.sender_id && (m.sender_username || m.sender_pp)) {
-        userCache.set(+m.sender_id, {
-          username: m.sender_username || userCache.get(+m.sender_id)?.username || "",
-          pp: m.sender_pp || userCache.get(+m.sender_id)?.pp || DEFAULT_PP
-        });
-      }
-    }
-
-    // Rendu de l’historique
-    for (const m of list) {
-      displayMessage({
-        senderId: m.sender_id,
-        receiverId: m.receiver_id,
-        content: m.content,
-        timestamp: m.sent_at,
-        sender: m.sender_username,
-        sender_pp: m.sender_pp
-      });
-    }
-
-    // ✅ Auto-scroll au bas après chargement initial (sans animation pour ne pas « secouer »)
-    scrollChatToBottom({ smooth: false });
-
-    // Binder l’envoi du message sur ce chat
-    const form = document.getElementById("chat-form");
-    if (form) {
-      form.onsubmit = sendMessage;
-    }
-  } catch (err) {
-    console.error("Erreur chargement messages privés :", err);
-  }
-}
-
-/* ============================
-   Groupes (ouverture — historique)
-============================ */
-async function openGroupChat(groupId, groupName) {
-  activeContactId = null;
-  activeGroupId   = groupId;
+  // Expose pour d’autres scripts (contacts.js, groups.js, etc.)
   window.activeContactId = null;
-  window.activeGroupId   = groupId;
+  window.activeGroupId   = null;
 
-  socket.emit("joinGroup", groupId);
+  // Cache des profils (évite de refetcher pour chaque message)
+  const DEFAULT_PP = "img/default.jpg";
+  const userCache  = new Map();
+  window.__userCache = userCache;
 
-  // Titre
-  const chatUserEl = document.getElementById("chat-user");
-  if (chatUserEl) chatUserEl.textContent = `[Groupe] ${groupName}`;
+  /* ------------------------
+     Helpers UI
+  ------------------------ */
+  function escapeHtml(x) {
+    return (x == null ? "" : String(x))
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
 
-  // Switch d’écran
-  document.getElementById("contact-section")?.classList.add("hidden");
-  document.getElementById("chat-area")?.classList.remove("hidden");
+  function isNearBottom(el, threshold = 80) {
+    if (!el) return true;
+    return el.scrollHeight - el.scrollTop - el.clientHeight < threshold;
+  }
 
-  // Historique
-  const chatBody = document.getElementById("chat-body");
-  if (chatBody) chatBody.innerHTML = "";
+  function scrollChatToBottom({ smooth = true } = {}) {
+    const body = el.chatBody();
+    if (!body) return;
+    requestAnimationFrame(() => {
+      body.scrollTo({ top: body.scrollHeight, behavior: smooth ? "smooth" : "auto" });
+    });
+  }
 
-  try {
-    const res  = await fetch(`http://localhost:3001/group-messages/${groupId}`);
-    const list = await res.json();
+  function setHeaderTitle(text) {
+    const h = el.chatHeader();
+    if (!h) return;
+    if (h.querySelector("h3")) h.querySelector("h3").textContent = text;
+    else h.textContent = text;
+  }
 
-    for (const m of list) {
-      // Hydrate un peu le cache
-      if (m.sender_id) {
-        userCache.set(+m.sender_id, {
-          username: m.sender_username || userCache.get(+m.sender_id)?.username || "",
-          pp: m.sender_pp || userCache.get(+m.sender_id)?.pp || DEFAULT_PP
-        });
-      }
+  function showChat() {
+    el.contactPanel()?.classList.add("hidden");
+    el.chatArea()?.classList.remove("hidden");
+  }
+  function showContacts() {
+    el.chatArea()?.classList.add("hidden");
+    el.contactPanel()?.classList.remove("hidden");
+  }
+
+  /* ------------------------
+     Socket.IO client
+  ------------------------ */
+  function connectSocket() {
+    try {
+      // eslint-disable-next-line no-undef
+      socket = io(API); // serveur_auth.js accepte CORS *
+      if (userId) socket.emit("registerUser", userId);
+      bindSocketEvents();
+    } catch (err) {
+      console.warn("[main] Socket.IO non disponible :", err);
+    }
+  }
+
+  function bindSocketEvents() {
+    if (!socket) return;
+
+    // Message privé reçu en temps réel
+    socket.on("privateMessage", (data) => {
+      const { senderId, receiverId, content } = data;
+      const concernsMe  = (senderId === userId || receiverId === userId);
+      const sameChat    = (senderId === activeContactId || receiverId === activeContactId);
+      if (!concernsMe || !sameChat) return;
 
       displayMessage({
+        senderId,
+        content,
+        sender_pp: userCache.get(senderId)?.pp,
+        sender_username: userCache.get(senderId)?.username
+      });
+    });
+
+    // Message groupe reçu en temps réel
+    socket.on("groupMessage", (data) => {
+      const { groupId, senderId, content } = data;
+      if (groupId !== activeGroupId) return;
+      displayMessage({
+        senderId,
+        content,
+        sender_pp: userCache.get(senderId)?.pp,
+        sender_username: userCache.get(senderId)?.username
+      });
+    });
+  }
+
+  /* ------------------------
+     REST utilitaires
+  ------------------------ */
+  async function getUserProfileSafe(id) {
+    try {
+      id = parseInt(id);
+      if (userCache.has(id)) return userCache.get(id);
+      const res = await fetch(`${API}/user/${id}`);
+      if (!res.ok) throw new Error("not ok");
+      const data = await res.json();
+      const profile = {
+        id: data.id,
+        username: data.username,
+        pp: data.pp || DEFAULT_PP,
+        description: data.description || ""
+      };
+      userCache.set(id, profile);
+      return profile;
+    } catch {
+      return null;
+    }
+  }
+
+  async function preloadSelfProfile() {
+    const me = await getUserProfileSafe(userId);
+    if (me) userCache.set(userId, me);
+    else userCache.set(userId, { id: userId, username, pp: DEFAULT_PP });
+  }
+
+  /* ------------------------
+     Rendu / messages
+  ------------------------ */
+  function displayMessage(data) {
+    const body = el.chatBody();
+    if (!body) return;
+
+    const mine = String(data.senderId) === String(userId);
+    const wrapper = document.createElement("div");
+    wrapper.classList.add("chat-message", mine ? "me" : "other");
+
+    const ppUrl = data.sender_pp || userCache.get(+data.senderId)?.pp || DEFAULT_PP;
+
+    wrapper.innerHTML = `
+      <div class="pp-message" style="background-image:url('${escapeHtml(ppUrl)}');"></div>
+      <div class="text-block">
+        <div class="sender-line">${escapeHtml(data.sender_username || (mine ? username : ""))}</div>
+        <div class="content-line">${escapeHtml(data.content)}</div>
+      </div>
+    `;
+
+    const shouldStick = isNearBottom(body);
+    body.appendChild(wrapper);
+    if (shouldStick || mine) scrollChatToBottom();
+  }
+
+  /* ------------------------
+     Historique privé & groupe
+  ------------------------ */
+  async function loadPrivateDiscussion(contactId, contactName) {
+    activeGroupId   = null;
+    activeContactId = parseInt(contactId, 10);
+    window.activeGroupId   = null;
+    window.activeContactId = activeContactId;
+
+    setHeaderTitle(contactName || "Discussion privée");
+    showChat();
+
+    const body = el.chatBody();
+    if (body) body.innerHTML = "";
+
+    try {
+      const res  = await fetch(`${API}/private-messages?user1=${userId}&user2=${activeContactId}`);
+      const list = await res.json();
+
+      // Prépare cache profils
+      const ids = new Set(list.map(m => m.sender_id).filter(Boolean));
+      await Promise.all([...ids].map(getUserProfileSafe));
+
+      list.forEach(m => displayMessage({
         senderId: m.sender_id,
-        groupId: m.group_id,
-        content: m.content,
-        timestamp: m.sent_at,
-        sender: m.sender_username,
-        sender_pp: m.sender_pp
+        content:  m.content,
+        sender_pp: m.sender_pp,
+        sender_username: m.sender_username
+      }));
+
+      scrollChatToBottom({ smooth: false });
+      bindSendForm(); // (re)lier sur la bonne discussion
+    } catch (err) {
+      console.error("[main] Erreur historique privé :", err);
+    }
+  }
+
+  async function openGroupChat(groupId, groupName) {
+    activeContactId = null;
+    activeGroupId   = parseInt(groupId, 10);
+    window.activeContactId = null;
+    window.activeGroupId   = activeGroupId;
+
+    if (socket) socket.emit("joinGroup", activeGroupId);
+
+    setHeaderTitle(`[Groupe] ${groupName || ""}`);
+    showChat();
+
+    const body = el.chatBody();
+    if (body) body.innerHTML = "";
+
+    try {
+      const res  = await fetch(`${API}/group-messages/${activeGroupId}`);
+      const list = await res.json();
+
+      const ids = new Set(list.map(m => m.sender_id).filter(Boolean));
+      await Promise.all([...ids].map(getUserProfileSafe));
+
+      list.forEach(m => displayMessage({
+        senderId: m.sender_id,
+        content:  m.content,
+        sender_pp: m.sender_pp,
+        sender_username: m.sender_username
+      }));
+
+      scrollChatToBottom({ smooth: false });
+      bindSendForm();
+    } catch (err) {
+      console.error("[main] Erreur historique groupe :", err);
+    }
+  }
+
+  /* ------------------------
+     Envoi message (form)
+  ------------------------ */
+  function bindSendForm() {
+    const form  = el.messageForm();
+    const input = el.messageInput();
+    if (!form || !input) return;
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const content = (input.value || "").trim();
+      if (!content) return;
+
+      // Affichage optimiste
+      const payload = {
+        senderId: userId,
+        content
+      };
+      displayMessage(payload);
+
+      input.value = "";
+
+      try {
+        if (activeContactId) {
+          // REST
+          await fetch(`${API}/private-message`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              senderId: userId,
+              receiverId: activeContactId,
+              content
+            })
+          });
+          // Socket
+          socket?.emit("privateMessage", {
+            senderId: userId,
+            receiverId: activeContactId,
+            content
+          });
+        } else if (activeGroupId) {
+          // REST (stocké par le serveur via socket dans ton implémentation)
+          socket?.emit("groupMessage", {
+            senderId: userId,
+            groupId: activeGroupId,
+            content
+          });
+        }
+      } catch (err) {
+        console.error("[main] Erreur envoi :", err);
+      }
+    };
+  }
+
+  /* ------------------------
+     Navigation
+  ------------------------ */
+  function bindNavigation() {
+    // Messages → charge la liste ET ouvre la 1ʳᵉ discussion automatiquement
+    const btnMsg = el.btnMessages();
+    if (btnMsg) {
+      btnMsg.addEventListener("click", () => {
+        window.loadContacts?.(true, ({ id, username }) => loadPrivateDiscussion(id, username));
+      });
+    } else {
+      // fallback: texte "Messages" dans la sidebar
+      document.querySelectorAll(".sidebar *").forEach(node => {
+        if (node.textContent?.trim().toLowerCase() === "messages") {
+          node.addEventListener("click", () => {
+            window.loadContacts?.(true, ({ id, username }) => loadPrivateDiscussion(id, username));
+          });
+        }
       });
     }
 
-    // Auto-scroll initial
-    scrollChatToBottom({ smooth: false });
+    // Contacts → charge la liste SANS ouvrir de discussion
+    const btnC = el.btnContacts();
+    if (btnC) {
+      btnC.addEventListener("click", () => {
+        showContacts();
+        window.loadContacts?.(false, ({ id, username }) => loadPrivateDiscussion(id, username));
+      });
+    }
 
-    // Binder l’envoi pour ce groupe
-    const form = document.getElementById("chat-form");
-    if (form) form.onsubmit = sendMessage;
-  } catch (err) {
-    console.error("Erreur chargement messages groupe :", err);
+    // Groupes (si groups.js expose loadGroups)
+    const btnG = el.btnGroups();
+    if (btnG) {
+      btnG.addEventListener("click", () => {
+        if (typeof window.loadGroups === "function") {
+          window.loadGroups((g) => openGroupChat(g.id, g.name));
+        } else {
+          console.log("[main] loadGroups non défini (groups.js).");
+        }
+      });
+    }
+
+    // Paramètres (si ui.js / parametres.js gèrent l’affichage)
+    const btnS = el.btnSettings();
+    if (btnS) {
+      btnS.addEventListener("click", () => {
+        if (typeof window.openSettings === "function") window.openSettings();
+      });
+    }
   }
-}
 
-/* ============================
-   Profils & cache
-============================ */
-async function preloadSelfProfile() {
-  const me = await getUserProfileSafe(userId);
-  if (me) {
-    userCache.set(+userId, { username: me.username || username, pp: me.pp || DEFAULT_PP });
+  /* ------------------------
+     Boot
+  ------------------------ */
+  async function boot() {
+    await preloadSelfProfile();
+    connectSocket();
+    bindNavigation();
+
+    // Titre par défaut
+    setHeaderTitle("Discussion privée la plus récente");
+
+    // Démarrage automatique : rendre l’écran messages (liste + 1ʳᵉ discussion)
+    window.loadContacts?.(true, ({ id, username }) => loadPrivateDiscussion(id, username));
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
   } else {
-    userCache.set(+userId, { username, pp: DEFAULT_PP });
+    boot();
   }
-}
 
-async function getUserProfileSafe(id) {
-  try {
-    id = parseInt(id);
-    if (userCache.has(id)) return userCache.get(id);
-
-    const res = await fetch(`http://localhost:3001/user/${id}`);
-    if (!res.ok) throw new Error("not ok");
-    const data = await res.json();
-
-    const profile = {
-      id: data.id,
-      username: data.username,
-      pp: data.pp || DEFAULT_PP,
-      description: data.description || ""
-    };
-    userCache.set(id, profile);
-    return profile;
-  } catch {
-    return null;
-  }
-}
-
-/* ============================
-   Utils
-============================ */
-function escapeHtml(str) {
-  if (str == null) return "";
-  return String(str)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
-
-// Rendre certaines fonctions globales si elles sont appelées ailleurs
-window.sendMessage = sendMessage;
-window.loadPrivateDiscussion = loadPrivateDiscussion;
-window.openGroupChat = openGroupChat;
+  // Expose quelques fonctions utiles globalement
+  window.loadPrivateDiscussion = loadPrivateDiscussion;
+  window.openGroupChat = openGroupChat;
+})();

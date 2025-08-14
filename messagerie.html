@@ -1,85 +1,117 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Nouvelle Messagerie</title>
-  <link rel="stylesheet" href="css/css.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    /* Ajout minimal pour garantir la visibilité de la barre d'envoi */
-    .chat { display: flex; flex-direction: column; }
-    .chat-body { flex: 1; overflow-y: auto; }
-    .chat-footer { border-top: 1px solid #334155; padding: 1rem; }
-    .chat-footer .input-wrapper { display: flex; gap: .75rem; align-items: center; }
-    .chat-footer input { flex: 1; }
-  </style>
-</head>
-<body>
-  <div class="app-container">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="logo">💬</div>
-      <nav>
-        <ul>
-          <li class="active" onclick="switchTab('messages')"><i class="fa fa-comments"></i> Messages</li>
-          <li onclick="switchTab('groups')"><i class="fa fa-users"></i> Groupes</li>
-          <li onclick="showContactSection()"><i class="fa fa-user-friends"></i> Contacts</li>
-          <li onclick="window.location.href='parametres.html'"><i class="fa fa-cog"></i> Paramètres</li>
-        </ul>
-      </nav>
-      <div class="user-footer">
-        <img class="pp" src="img/default.jpg" alt="pp" />
-        <span id="username">Anas</span>
-        <button class="settings-btn" onclick="window.location.href='parametres.html'">⚙️</button>
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <title>Messagerie</title>
+      <link rel="stylesheet" href="css/css.css" />
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    </head>
+    <body>
+      <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          <div class="logo">💬</div>
+          <nav>
+            <ul>
+              <li class="active"><i class="fa fa-comments"></i></li>
+              <li><i class="fa fa-users"></i></li>
+              <li><i class="fa fa-user-friends"></i></li>
+              <li><i class="fa fa-cog"></i></li>
+            </ul>
+          </nav>
+          <div class="user-footer">
+            <div class="pp" style="background-image:url('default.jpg')"></div>
+            <span id="username">Anas</span>
+          </div>
+        </aside>
+    
+        <!-- Contacts -->
+        <section class="contacts" id="contact-section">
+          <h2>Discussions</h2>
+          <div id="discussions-list">
+            <!-- Exemple d’item de contact -->
+            <div class="contact-item active">
+              <div class="pp" style="background-image:url('default.jpg')">
+                <span class="status online"></span>
+              </div>
+              <div class="meta">
+                <div class="name">Sarah</div>
+                <div class="preview">À tout à l’heure !</div>
+              </div>
+              <div class="end">
+                <span class="time">12:08</span>
+                <span class="badge">3</span>
+              </div>
+            </div>
+    
+            <div class="contact-item">
+              <div class="pp" style="background-image:url('default.jpg')">
+                <span class="status"></span>
+              </div>
+              <div class="meta">
+                <div class="name">Anas_1</div>
+                <div class="preview">Dernier message très très long pour tester l’ellipsis…</div>
+              </div>
+              <div class="end">
+                <span class="time">Hier</span>
+              </div>
+            </div>
+          </div>
+        </section>
+    
+        <!-- Chat -->
+        <main class="chat" id="chat-area">
+          <header class="chat-header">
+            <div class="peer">
+              <div class="pp" style="background-image:url('default.jpg')"></div>
+              <div>
+                <div class="name" id="chat-user">Sarah</div>
+                <div class="sub">En ligne</div>
+              </div>
+            </div>
+          </header>
+    
+          <div class="chat-body" id="chat-body">
+            <div class="chat-message other">
+              <div class="pp-message" style="background-image:url('default.jpg')"></div>
+              <div class="text-block">
+                <div class="sender-line">Nassim</div>
+                <div class="content-line">c'est comment'</div>
+              </div>
+            </div>
+    
+            <div class="chat-message me">
+              <div class="pp-message" style="background-image:url('default.jpg')"></div>
+              <div class="text-block">
+                <div class="sender-line">Moi</div>
+                <div class="content-line">message</div>
+              </div>
+            </div>
+          </div>
+    
+          <form class="chat-footer" id="chat-form" autocomplete="off">
+            <div class="input-wrapper">
+              <input type="text" id="message-input" placeholder="Écris ton message..." autocomplete="off">
+              <button type="submit" id="send-btn"><i class="fa fa-paper-plane"></i></button>
+            </div>
+          </form>
+        </main>
+    
+        <!-- Profil -->
+        <aside class="profile" id="contact-profile">
+          <div class="pp" style="background-image:url('default.jpg')"></div>
+          <h4 class="username" id="profile-name">Nassim</h4>
+          <p class="desc" id="profile-description">Description : gentil</p>
+          <p>En ligne</p>
+        </aside>
       </div>
-    </aside>
-
-    <!-- Liste de contacts -->
-    <section class="contacts" id="contact-section">
-      <h2>Discussions</h2>
-      <div id="discussions-list"></div>
-    </section>
-
-    <!-- Chat principal -->
-    <main class="chat chat-area" id="chat-area">
-
-      <header class="chat-header">
-        <h3 id="chat-user">Discussion privée la plus récente</h3>
-      </header>
-      <div class="chat-body" id="chat-body"></div>
-      
-      <!-- Footer transformé en formulaire -->
-      <form class="chat-footer" id="chat-form" autocomplete="off">
-        <div class="input-wrapper">
-          <input type="text" id="message-input" placeholder="Écris ton message..." autocomplete="off">
-          <button type="submit" id="send-btn"><i class="fa fa-paper-plane"></i></button>
-        </div>
-      </form>
-    </main>
-    <style>
-      /* Hotfix : conserver la barre d’envoi visible */
-      #chat-area { display: flex; flex-direction: column; height: 100vh; }
-      #chat-body { flex: 1; overflow-y: auto; }
-      .chat-footer { border-top: 1px solid #333; }
-
-    </style>
-
-    <!-- Profil à droite -->
-    <aside class="profile" id="contact-profile">
-      <div class="pp large"></div>
-      <h4 id="profile-name">Sarah</h4>
-      <p id="profile-description">Description : Amie proche</p>
-      <p>En ligne</p>
-    </aside>
-  </div>
-
-  <!-- Scripts (ancien ordre pour compatibilité) -->
-  <script src="scripts/auth.js"></script>
-  <script src="scripts/contacts.js"></script>
-  <script src="scripts/groups.js"></script>
-  <script src="scripts/ui.js"></script>
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-  <script src="scripts/main.js"></script>
-</body>
-</html>
+      <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+      <script src="scripts/auth.js"></script>
+      <script src="scripts/contacts.js"></script>
+      <script src="scripts/groups.js"></script>
+      <script src="scripts/ui.js"></script>
+      <script src="scripts/main.js"></script>
+    </body>
+    </html>
+    

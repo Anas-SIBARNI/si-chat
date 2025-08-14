@@ -588,3 +588,37 @@ html, body {
 #group-options-menu button:hover {
   background-color: #333;
 }
+
+
+/* Scrollbar */
+
+
+body {
+  --sb-track-color: #1f2937;
+  --sb-thumb-color: #374151;
+  --sb-size: 12px;
+}
+
+body::-webkit-scrollbar {
+  width: var(--sb-size)
+}
+
+body::-webkit-scrollbar-track {
+  background: var(--sb-track-color);
+  border-radius: 7px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb-color);
+  border-radius: 7px;
+  border: 1px solid #585858;
+}
+
+@supports not selector(::-webkit-scrollbar) {
+  body {
+    scrollbar-color: var(--sb-thumb-color)
+                     var(--sb-track-color);
+  }
+}
+
+/* --------- */

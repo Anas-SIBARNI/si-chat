@@ -1,90 +1,97 @@
-// scripts/contacts.js (FIX)
 
-function __getUserId() {
-  // on lit celui posé par main.js si dispo, sinon fallback localStorage
-  return window.userId || localStorage.getItem("userId");
-}
+/* =====================================================
+   contacts.js — liste des amis
+   - Récupère les contacts via /friends/:userId
+   - Rend la liste dans #contact-list (ou un fallback)
+   - Permet d'ouvrir une discussion au clic
+   - Option autoOpenFirst pour ouvrir la 1ʳᵉ discussion (Messages)
+===================================================== */
+(function () {
+  const API = "http://localhost:3001";
 
-// ---- API: envoyer une demande d'ami (optionnel)
-function addContact(e) {
-  e.preventDefault();
-  const input = document.getElementById("new-contact");
-  const receiverUsername = input ? input.value.trim() : "";
-  if (!receiverUsername) return;
+  function getUserId() {
+    return parseInt(localStorage.getItem("userId") || "0", 10);
+  }
 
-  fetch("http://localhost:3001/friend-request", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ senderId: __getUserId(), receiverUsername })
-  })
-    .then(r => r.json())
-    .then(data => {
-      const box = document.getElementById("add-result");
-      if (box) box.textContent = data.message || data.error || "";
-    })
-    .catch(() => {
-      const box = document.getElementById("add-result");
-      if (box) box.textContent = "Erreur réseau";
+  function getListContainer() {
+    return (
+      document.getElementById("contact-list") ||
+      document.querySelector(".contact-list") ||
+      document.querySelector("#user-conversations-list") ||
+      createFallbackList()
+    );
+  }
+
+  function createFallbackList() {
+    const container = document.querySelector(".contacts-panel") || document.getElementById("contact-section") || document.querySelector(".sidebar") || document.body;
+    const ul = document.createElement("div");
+    ul.id = "contact-list";
+    container.appendChild(ul);
+    return ul;
+  }
+
+  function markActive(contactId) {
+    document.querySelectorAll("#contact-list .contact-item").forEach(el => {
+      if (String(el.dataset.contactId) === String(contactId)) el.classList.add("active");
+      else el.classList.remove("active");
     });
-}
-
-function renderContactItem(friend) {
-  const li = document.createElement("li");
-  li.classList.add("contact");
-  li.dataset.id = friend.id;
-  li.dataset.username = friend.username;
-
-  const statusClass = friend.isOnline ? "online" : "offline";
-  const pp = (friend.pp || "img/default.jpg").replace(/"/g, "&quot;");
-  const name = String(friend.username || "").replace(/</g, "&lt;");
-
-  li.innerHTML = `
-    <div class="pp ${statusClass}" style="
-      background-image:url('${pp}');
-      background-size:cover;background-position:center;
-    "></div>
-    <div>
-      <strong>${name}</strong>
-      <p>${friend.isOnline ? "En ligne" : "Hors ligne"}</p>
-    </div>
-  `;
-
-  li.addEventListener("click", () => {
-    if (typeof loadPrivateDiscussion === "function") {
-      loadPrivateDiscussion(friend.id, friend.username);
-      document.getElementById("contact-section")?.classList.add("hidden");
-      document.getElementById("chat-area")?.classList.remove("hidden");
-    }
-  });
-
-  return li;
-}
-
-async function loadContacts() {
-  const list = document.getElementById("discussions-list"); // ID correct
-  if (!list) {
-    console.warn("[loadContacts] conteneur #discussions-list introuvable");
-    return;
   }
-  list.innerHTML = `<div style="padding:.6rem;color:#9aa3b2">Chargement…</div>`;
 
-  try {
-    const res = await fetch(`http://localhost:3001/friends/${__getUserId()}`);
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    const friends = await res.json();
+  function row(contact, onOpen) {
+    const div = document.createElement("div");
+    div.className = "contact-item";
+    div.dataset.contactId = contact.id;
 
+    const pp = (contact.pp || "img/default.jpg").replace(/"/g, "&quot;");
+    div.innerHTML = `
+      <div class="pp" style="background-image:url('${pp}'); background-size:cover; background-position:center;"></div>
+      <div class="labels">
+        <strong>${contact.username}</strong>
+        <small class="muted">${contact.isOnline ? "En ligne" : "Hors ligne"}</small>
+      </div>
+    `;
+
+    div.addEventListener("click", () => {
+      markActive(contact.id);
+      if (typeof onOpen === "function") onOpen(contact);
+    });
+
+    return div;
+  }
+
+  async function loadContacts(autoOpenFirst = false, onOpen = null) {
+    const userId = getUserId();
+    if (!userId) return;
+
+    const list = getListContainer();
     list.innerHTML = "";
-    if (!Array.isArray(friends) || friends.length === 0) {
-      list.innerHTML = `<div style="padding:.8rem;color:#9aa3b2">Aucun contact pour le moment</div>`;
-      return;
+
+    try {
+      const res = await fetch(`${API}/friends/${userId}`);
+      const friends = await res.json();
+
+      if (!Array.isArray(friends) || friends.length === 0) {
+        list.innerHTML = `<div class="empty muted">Aucun contact</div>`;
+        return;
+      }
+
+      // (option) trier par "plus récent" si tu as un champ (à adapter)
+      // friends.sort((a, b) => new Date(b.last_message_at) - new Date(a.last_message_at));
+
+      friends.forEach(f => list.appendChild(row(f, onOpen)));
+
+      if (autoOpenFirst) {
+        const first = friends[0];
+        markActive(first.id);
+        if (typeof onOpen === "function") onOpen(first);
+      }
+    } catch (err) {
+      console.error("[contacts] Erreur chargement :", err);
+      list.innerHTML = `<div class="error">Erreur de chargement</div>`;
     }
-
-    friends.forEach(f => list.appendChild(renderContactItem(f)));
-  } catch (e) {
-    console.error(e);
-    list.innerHTML = `<div style="padding:.8rem;color:#ef4444">Impossible de charger les contacts</div>`;
   }
-}
 
-window.addContact = addContact;
-window.loadContacts = loadContacts;
+  // Expose API
+  window.loadContacts = loadContacts;
+  window.__markActiveContact = markActive;
+})();
