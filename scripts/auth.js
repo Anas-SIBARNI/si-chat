@@ -1,3 +1,35 @@
+// ===================
+// Connexion utilisateur
+// ===================
+function login(email, password) {
+  fetch(`http://localhost:3001/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        alert(data.error);
+        return;
+      }
+      // Sauvegarde du userId et username pour le reste de l'application
+      localStorage.setItem("userId", String(data.userId));
+      localStorage.setItem("username", data.username);
+      window.currentUserId = data.userId;
+
+      // Redirection vers la messagerie
+      window.location.href = 'messagerie.html';
+    })
+    .catch(err => {
+      console.error('Erreur login:', err);
+      alert('Erreur de connexion');
+    });
+}
+
+// ===================
+// Modification du profil
+// ===================
 function editDescription() {
   const current = prompt("Nouvelle description :");
   if (current === null) return;
@@ -37,7 +69,9 @@ function editEmail() {
     .catch(() => alert("Erreur"));
 }
 
-
+// ===================
+// Déconnexion
+// ===================
 function logout() {
   fetch(`http://localhost:3001/logout/${userId}`, { method: 'POST' })
     .then(() => {
@@ -45,4 +79,3 @@ function logout() {
       window.location.href = 'login.html';
     });
 }
-

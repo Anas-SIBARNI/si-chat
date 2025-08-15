@@ -407,3 +407,119 @@
   window.loadPrivateDiscussion = loadPrivateDiscussion;
   window.openGroupChat = openGroupChat;
 })();
+
+
+
+
+// ======== Config & helpers ========
+const API_BASE = window.API_BASE || "http://localhost:3001";
+const meId = Number(localStorage.getItem("userId")); // défini au login
+let currentDM = null; // {contactId, username, pp}
+
+// petits helpers pour cibler le DOM (avec fallback)
+const $ = (sel) => document.querySelector(sel);
+const chatTitle = $("#chat-user") || $("#chat-title") || document.body;
+const chatBody  = $("#chat-body") || $("#messages") || document.body;
+const msgInput  = $("#message-input") || $("#chat-input");
+const sendBtn   = $("#send-btn") || $("#send");
+
+// aff. un message
+function renderMessage({ sender_id, content, sent_at, sender_username, sender_pp }) {
+  const wrap = document.createElement("div");
+  const me = Number(sender_id) === meId;
+  wrap.className = "chat-message " + (me ? "me" : "other");
+  wrap.innerHTML = `
+    <div class="pp-message" style="background-image:url('${sender_pp || "default.jpg"}')"></div>
+    <div class="text-block">
+      <div class="sender-line">${sender_username || (me ? "Moi" : "")}</div>
+      <div class="content-line">${escapeHtml(content)}</div>
+      <small style="opacity:.7">${new Date(sent_at || Date.now()).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})}</small>
+    </div>
+  `;
+  chatBody.appendChild(wrap);
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+function escapeHtml(s=""){return String(s)
+  .replaceAll("&","&amp;").replaceAll("<","&lt;")
+  .replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");}
+
+// ======== Charger l'historique privé (API existante) ========
+// GET /private-messages?user1=&user2=  ➜ renvoie l’historique ordonné:contentReference[oaicite:1]{index=1}
+async function loadPrivateHistory(u1, u2) {
+  const r = await fetch(`${API_BASE}/private-messages?user1=${u1}&user2=${u2}`);
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  const rows = await r.json();
+  chatBody.innerHTML = "";
+  rows.forEach(row => renderMessage({
+    sender_id: row.sender_id,
+    content: row.content,
+    sent_at: row.sent_at,
+    sender_username: row.sender_username,
+    sender_pp: row.sender_pp
+  }));
+}
+
+// ======== Ouvrir une conversation quand un contact est cliqué ========
+window.addEventListener("contact:selected", async (e) => {
+  const { contactId, username, pp } = e.detail;
+  currentDM = { contactId, username, pp };
+
+  // en-tête
+  if (chatTitle) chatTitle.textContent = username || "Discussion privée";
+
+  // historique
+  try {
+    await loadPrivateHistory(meId, contactId); // API backend:contentReference[oaicite:2]{index=2}
+  } catch (err) {
+    console.error("loadPrivateHistory:", err);
+  }
+});
+
+// ======== Envoi de message ========
+// Socket.IO côté serveur écoute "privateMessage" et stocke en base, puis ré-émet:contentReference[oaicite:3]{index=3}
+function sendCurrentMessage() {
+  if (!currentDM || !msgInput || !msgInput.value.trim()) return;
+  const payload = {
+    senderId: meId,
+    receiverId: currentDM.contactId,
+    content: msgInput.value.trim()
+  };
+
+  // 1) émettre en temps réel
+  if (window.socket?.emit) {
+    window.socket.emit("privateMessage", payload); // serveur enverra aux 2 users:contentReference[oaicite:4]{index=4}
+  }
+
+  // 2) sauvegarde HTTP (sécurise si socket rate)
+  fetch(`${API_BASE}/private-message`, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ senderId: meId, receiverId: currentDM.contactId, content: payload.content })
+  }).catch(()=>{});
+
+  // 3) affichage immédiat côté moi
+  renderMessage({ sender_id: meId, content: payload.content, sender_username: "Moi", sender_pp: localStorage.getItem("pp") });
+  msgInput.value = "";
+}
+
+sendBtn?.addEventListener("click", sendCurrentMessage);
+msgInput?.addEventListener("keydown", (e)=>{ if(e.key==="Enter" && !e.shiftKey){ e.preventDefault(); sendCurrentMessage(); }});
+
+// ======== Réception temps réel ========
+// Le serveur émet "privateMessage" aux rooms user-* et stocke en base:contentReference[oaicite:5]{index=5}
+if (window.socket?.on) {
+  // s’enregistrer dans la room user-{meId} au connect
+  window.socket.emit?.("registerUser", meId); // côté serveur: socket.join(`user-${userId}`):contentReference[oaicite:6]{index=6}
+
+  window.socket.on("privateMessage", (data) => {
+    const { senderId, receiverId, content } = data || {};
+    if (!currentDM) return;
+    // afficher uniquement si c'est la conversation ouverte
+    const isForMe = receiverId === meId && senderId === currentDM.contactId;
+    const isEcho  = senderId === meId && receiverId === currentDM.contactId;
+    if (isForMe || isEcho) {
+      renderMessage({ sender_id: senderId, content, sender_username: isEcho ? "Moi" : currentDM.username, sender_pp: isEcho ? localStorage.getItem("pp") : currentDM.pp });
+    }
+  });
+}

@@ -1,114 +1,183 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion - Messagerie</title>
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        .auth-container {
-            max-width: 400px;
-            margin: 5rem auto;
-            padding: 2rem;
-            background-color: #27272a;
-            border-radius: 10px;
-            color: white;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Connexion - Messagerie</title>
 
-        .auth-container h2 {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
+  <!-- Ton style global -->
+  <link rel="stylesheet" href="style.css" />
 
-        .auth-container label {
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        .auth-container input {
-            width: 100%;
-            padding: 0.8rem;
-            margin-bottom: 1.5rem;
-            border-radius: 5px;
-            background-color: #18181B;
-            color: white;
-            border: 1px solid #444;
-        }
-
-        .auth-container button {
-            width: 100%;
-        }
-
-        .auth-container p {
-            text-align: center;
-            margin-top: 1rem;
-            font-size: 0.9rem;
-        }
-
-        .auth-container a {
-            color: #1d4ed8;
-        }
-    </style>
+  <style>
+    /* Petit style local pour la carte de connexion */
+    :root { color-scheme: dark; }
+    body{
+      margin:0; background:#18181B; color:#fff; font-family: system-ui, -apple-system, Segoe UI, Roboto, Poppins, Arial, sans-serif;
+      min-height:100dvh; display:grid; place-items:center;
+    }
+    .auth-card{
+      width:min(420px, 92vw);
+      background:#27272a; border:1px solid #3a3a40; border-radius:14px; padding:24px 20px 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    .auth-card h2{ margin:0 0 6px; font-weight:700; }
+    .muted{ color:#c9c9c9; font-size:.92rem; margin:0 0 18px; }
+    .field{ margin:12px 0; }
+    .label-row{ display:flex; justify-content:space-between; align-items:center; }
+    label{ font-size:.95rem; color:#e9e9e9; }
+    .input{
+      margin-top:6px; width:100%; background:#1a1a1d; border:1px solid #3a3a3f; color:#fff;
+      padding:12px 12px; border-radius:10px; font-size:1rem;
+    }
+    .input:focus{ outline:none; border-color:#2563eb; box-shadow:0 0 0 2px rgba(37,99,235,.35); }
+    .pw-wrap{ position:relative; }
+    .pw-toggle{
+      position:absolute; right:10px; top:50%; translate:0 -50%;
+      background:transparent; border:none; color:#c9c9c9; cursor:pointer; font-size:.9rem;
+    }
+    .btn{
+      display:inline-flex; justify-content:center; align-items:center; gap:.5rem; width:100%;
+      border:none; border-radius:10px; padding:12px 14px; cursor:pointer;
+      background:#2563eb; color:#fff; font-weight:600; font-size:1rem;
+      transition:filter .15s ease;
+    }
+    .btn:hover{ filter:brightness(1.04); }
+    .btn[disabled]{ opacity:.6; cursor:not-allowed; }
+    .row{ display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:10px; }
+    .error{ color:#ff9c9c; background:#3a1f20; border:1px solid #6e2c2f; border-radius:10px; padding:10px 12px; font-size:.95rem; display:none; }
+    .info { color:#b4e1ff; background:#1c2935; border:1px solid #24455f; border-radius:10px; padding:8px 10px; font-size:.9rem; display:none; margin-top:10px;}
+    .link{ color:#93c5fd; text-decoration:none; }
+    .link:hover{ text-decoration:underline; }
+    .foot{ text-align:center; margin-top:16px; color:#c9c9c9; font-size:.95rem; }
+    .brand{ display:flex; gap:10px; align-items:center; margin-bottom:12px; }
+    .dot{ width:10px; height:10px; border-radius:999px; background:#2563eb; box-shadow:0 0 16px #2563ebaa; }
+  </style>
 </head>
 <body>
 
-    <div class="auth-container">
-        <h2>Connexion</h2>
-        <form id="login-form">
-            <label for="email">Adresse e-mail</label>
-            <input type="email" id="email" required>
-
-            <label for="password">Mot de passe</label>
-            <input type="password" id="password" required>
-
-            <div id="error-message" class="error"></div>
-            <button type="submit" class="btn">Se connecter</button>
-        </form>
-        <p>Pas encore inscrit ? <a href="register.html">Ouvrir un compte</a></p>
+  <main class="auth-card">
+    <div class="brand">
+      <span class="dot"></span>
+      <strong>Messagerie</strong>
     </div>
+    <h2>Connexion</h2>
+    <p class="muted">Entre ton e‑mail et ton mot de passe pour accéder à la messagerie.</p>
 
-    <script>
-        const form = document.getElementById('login-form');
-        const errorMessage = document.getElementById('error-message');
-      
-        form.addEventListener('submit', async function (e) {
-          e.preventDefault();
-      
-          const email = document.getElementById('email').value;
-          const password = document.getElementById('password').value;
-      
-          try {
-            const response = await fetch('http://localhost:3001/login', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({ email, password })
-            });
-      
-            const data = await response.json();
-      
-            if (response.ok) {
-                // Enregistre les infos utilisateur dans localStorage
-                localStorage.setItem('userId', data.userId);
-                localStorage.setItem('username', data.username);
+    <form id="login-form" novalidate>
+      <div class="field">
+        <label for="email">Adresse e‑mail</label>
+        <input id="email" type="email" class="input" autocomplete="email" required placeholder="ex: nom@domaine.com"/>
+      </div>
 
-                console.log("Enregistré :", data.userId, data.username);
+      <div class="field">
+        <div class="label-row">
+          <label for="password">Mot de passe</label>
+          <button type="button" id="toggle" class="pw-toggle" tabindex="-1">Afficher</button>
+        </div>
+        <div class="pw-wrap">
+          <input id="password" type="password" class="input" autocomplete="current-password" required placeholder="••••••••"/>
+        </div>
+      </div>
 
+      <div id="error" class="error"></div>
+      <div id="info" class="info"></div>
 
-                // Redirige vers la messagerie
-                window.location.href = "messagerie.html";
-            } else {
-              errorMessage.textContent = data.error || "Une erreur est survenue.";
-            }
-      
-          } catch (error) {
-            console.error(error);
-            errorMessage.textContent = "Erreur serveur.";
-          }
+      <button id="submit" class="btn" type="submit">
+        <span id="btn-text">Se connecter</span>
+        <svg id="spinner" width="18" height="18" viewBox="0 0 24 24" fill="none" style="display:none" aria-hidden="true">
+          <circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="3" opacity=".25"/>
+          <path d="M21.5 12a9.5 9.5 0 0 0-9.5-9.5" stroke="currentColor" stroke-width="3">
+            <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite"/>
+          </path>
+        </svg>
+      </button>
+
+      <div class="row">
+        <span></span>
+        <a class="link" href="register.html">Créer un compte</a>
+      </div>
+    </form>
+
+    <p class="foot">Besoin d’aide ? Vérifie tes identifiants ou contacte l’admin.</p>
+  </main>
+
+  <script>
+    // ➜ Configure la base API si tu en as besoin ailleurs (contacts.js lit window.API_BASE)
+    window.API_BASE = "http://localhost:3001";
+
+    const form = document.getElementById('login-form');
+    const emailEl = document.getElementById('email');
+    const pwEl = document.getElementById('password');
+    const btn = document.getElementById('submit');
+    const btnText = document.getElementById('btn-text');
+    const spinner = document.getElementById('spinner');
+    const errorEl = document.getElementById('error');
+    const infoEl = document.getElementById('info');
+    const toggle = document.getElementById('toggle');
+
+    toggle.addEventListener('click', () => {
+      const type = pwEl.getAttribute('type') === 'password' ? 'text' : 'password';
+      pwEl.setAttribute('type', type);
+      toggle.textContent = type === 'password' ? 'Afficher' : 'Masquer';
+      pwEl.focus();
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      errorEl.style.display = 'none';
+      infoEl.style.display  = 'none';
+
+      const email = emailEl.value.trim();
+      const password = pwEl.value;
+
+      if (!email || !password) {
+        errorEl.textContent = "Merci de renseigner l’e‑mail et le mot de passe.";
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      // UI: loading
+      btn.disabled = true;
+      spinner.style.display = 'inline';
+      btnText.textContent = 'Connexion…';
+
+      try {
+        const res = await fetch(`${window.API_BASE}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
         });
-      </script>
-      
 
+        const data = await res.json();
+
+        if (!res.ok) {
+          // Backend renvoie { error: "..." } en cas d'échec
+          errorEl.textContent = data.error || "Email ou mot de passe invalide.";
+          errorEl.style.display = 'block';
+        } else {
+          // ✅ Sauvegarde pour le reste de l’app
+          localStorage.setItem('userId', String(data.userId));
+          localStorage.setItem('username', data.username);
+          window.currentUserId = data.userId;
+
+          infoEl.textContent = "Connexion réussie. Redirection…";
+          infoEl.style.display = 'block';
+
+          // Redirection vers la messagerie
+          window.location.href = 'messagerie.html';
+        }
+      } catch (err) {
+        console.error(err);
+        errorEl.textContent = "Erreur serveur. Vérifie que le backend tourne.";
+        errorEl.style.display = 'block';
+      } finally {
+        // reset UI state (au cas où on reste sur la page)
+        btn.disabled = false;
+        spinner.style.display = 'none';
+        btnText.textContent = 'Se connecter';
+      }
+    });
+  </script>
 </body>
 </html>
