@@ -14,12 +14,13 @@
           <div class="logo"><img src="img/bulles3D.png" alt="Illustration Messagerie Logo" height="50" width="50"></div>
           <nav>
             <ul>
-              <li class="active"><i class="fa fa-comments"></i></li>
-              <li><i class="fa fa-users"></i></li>
-              <li><i class="fa fa-user-friends"></i></li>
+              <li id="nav-discussions" class="active"><i class="fa fa-comments"></i></li>
+              <li id="nav-groups">G</li>
+              <li id="nav-friends">F</i></li>
               <li><a href="parametres.html"><i class="fa fa-cog"></i></a></li>
             </ul>
           </nav>
+          
           <div class="user-footer">
             <div class="pp" style="background-image:url('default.jpg')"></div>
             <span id="username">Username</span>
@@ -33,42 +34,30 @@
         </style>
         
     
-        <!-- Contacts -->
+        <!-- Discussions privées -->
         <section class="contacts" id="contact-section">
           <h2>Discussions</h2>
           <div id="discussions-list">
           </div>
         </section>
+
+        <!-- Groupes -->
+        <section class="contacts" id="group-section" style="display:none;">
+          <h2>Groupes</h2>
+          <div id="user-groups-list"></div>
+        </section>
+
+
     
         <!-- Chat -->
         <main class="chat" id="chat-area">
           <header class="chat-header">
             <div class="peer">
               <div class="pp" style="background-image:url('default.jpg')"></div>
-              <div>
-                <div class="name" id="chat-user">Sarah</div>
-                <div class="sub">En ligne</div>
-              </div>
             </div>
           </header>
     
-          <div class="chat-body" id="chat-body">
-            <div class="chat-message other">
-              <div class="pp-message" style="background-image:url('default.jpg')"></div>
-              <div class="text-block">
-                <div class="sender-line">Nassim</div>
-                <div class="content-line">c'est comment'</div>
-              </div>
-            </div>
-    
-            <div class="chat-message me">
-              <div class="pp-message" style="background-image:url('default.jpg')"></div>
-              <div class="text-block">
-                <div class="sender-line">Moi</div>
-                <div class="content-line">message</div>
-              </div>
-            </div>
-          </div>
+          <div class="chat-body" id="chat-body"></div>
     
           <form class="chat-footer" id="chat-form" autocomplete="off">
             <div class="input-wrapper">
@@ -95,7 +84,10 @@
       <script src="scripts/auth.js"></script>
       <script src="scripts/contacts.js"></script>
       <script src="scripts/groups.js"></script>
+      
       <script src="scripts/ui.js"></script>
+      <script src="scripts/tabs.js"></script>
+
       <script src="scripts/main.js"></script>
     </body>
     </html>
