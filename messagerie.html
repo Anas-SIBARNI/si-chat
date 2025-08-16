@@ -1,94 +1,95 @@
-    <!DOCTYPE html>
-    <html lang="fr">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-      <title>Messagerie</title>
-      <link rel="stylesheet" href="css/css.css" />
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    </head>
-    <body>
-      <div class="app-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-          <div class="logo"><img src="img/bulles3D.png" alt="Illustration Messagerie Logo" height="50" width="50"></div>
-          <nav>
-            <ul>
-              <li id="nav-discussions" class="active"><i class="fa fa-comments"></i></li>
-              <li id="nav-groups">G</li>
-              <li id="nav-friends">F</i></li>
-              <li><a href="parametres.html"><i class="fa fa-cog"></i></a></li>
-            </ul>
-          </nav>
-          
-          <div class="user-footer">
-            <div class="pp" style="background-image:url('default.jpg')"></div>
-            <span id="username">Username</span>
-          </div>
-        </aside>
-        <style>
-          .sidebar nav ul li a[href="parametres.html"]:visited {
-            color: inherit; /* garde la couleur du texte par défaut */
-          }
-
-        </style>
-        
-    
-        <!-- Discussions privées -->
-        <section class="contacts" id="contact-section">
-          <h2>Discussions</h2>
-          <div id="discussions-list">
-          </div>
-        </section>
-
-        <!-- Groupes -->
-        <section class="contacts" id="group-section" style="display:none;">
-          <h2>Groupes</h2>
-          <div id="user-groups-list"></div>
-        </section>
-
-
-    
-        <!-- Chat -->
-        <main class="chat" id="chat-area">
-          <header class="chat-header">
-            <div class="peer">
-              <div class="pp" style="background-image:url('default.jpg')"></div>
-            </div>
-          </header>
-    
-          <div class="chat-body" id="chat-body"></div>
-    
-          <form class="chat-footer" id="chat-form" autocomplete="off">
-            <div class="input-wrapper">
-              <input type="text" id="message-input" placeholder="Écris ton message..." autocomplete="off">
-              <button type="submit" id="send-btn"><i class="fa fa-paper-plane"></i></button>
-            </div>
-          </form>
-        </main>
-    
-        <!-- Profil -->
-        <aside class="profile" id="contact-profile">
-          <div class="pp" style="background-image:url('default.jpg')"></div>
-          <h4 class="username" id="profile-name">Nassim</h4>
-          <p class="desc" id="profile-description">Description : gentil</p>
-          <p>En ligne</p>
-        </aside>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Messagerie</title>
+  <link rel="stylesheet" href="css/css.css" />
+  <link rel="stylesheet" href="css/fiche.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo"><img src="img/bulles3D.png" alt="Illustration Messagerie Logo" height="50" width="50"></div>
+      <nav>
+        <ul>
+          <li id="nav-discussions" class="active"><i class="fa fa-comments"></i></li>
+          <li id="nav-groups">G</li>
+          <li id="nav-friends">F</li> <!-- (fix) retiré </i> en trop -->
+          <li><a href="parametres.html"><i class="fa fa-cog"></i></a></li>
+        </ul>
+      </nav>
+      
+      <div class="user-footer">
+        <!-- (fix) chemin image -->
+        <div class="pp" style="background-image:url('img/default.jpg')"></div>
+        <span id="username">Username</span>
       </div>
+    </aside>
 
-      <script>
-        window.API_BASE = "http://localhost:3001";
-      </script>
-      
-      <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-      <script src="scripts/auth.js"></script>
-      <script src="scripts/contacts.js"></script>
-      <script src="scripts/groups.js"></script>
-      
-      <script src="scripts/ui.js"></script>
-      <script src="scripts/tabs.js"></script>
-
-      <script src="scripts/main.js"></script>
-    </body>
-    </html>
+    <style>
+      .sidebar nav ul li a[href="parametres.html"]:visited { color: inherit; }
+    </style>
     
+    <!-- Discussions privées -->
+    <section class="contacts" id="contact-section">
+      <h2>Discussions</h2>
+      <div id="discussions-list"></div>
+    </section>
+
+    <!-- Groupes -->
+    <section class="contacts" id="group-section" style="display:none;">
+      <h2>Groupes</h2>
+      <div id="user-groups-list"></div>
+    </section>
+
+    <!-- Chat -->
+    <main class="chat messagerie-" id="chat-area">
+      <header class="chat-header">
+        <div class="peer">
+          <!-- (fix) chemin image -->
+          <div class="pp" style="background-image:url('img/default.jpg')"></div>
+        </div>
+      </header>
+
+      <div class="chat-body" id="chat-body"></div>
+
+      <form class="chat-footer" id="chat-form" autocomplete="off">
+        <div class="input-wrapper">
+          <input type="text" id="message-input" placeholder="Écris ton message..." autocomplete="off">
+          <button type="submit" id="send-btn"><i class="fa fa-paper-plane"></i></button>
+        </div>
+      </form>
+    </main>
+
+    <!-- Panneau fiche profil (droite) -->
+    
+      <!-- Panneau fiche profil (droite) -->
+      <aside id="profile-panel" class="profile-panel" aria-label="Fiche profil de l'interlocuteur">
+        <div id="profile-card">
+          <div class="pp" id="profile-pp" style="width:72px;height:72px;border-radius:50%;background:#ddd;background-size:cover;background-position:center;"></div>
+          <h3 id="profile-name" style="margin:12px 0 4px 0;">@username</h3>
+          <p id="profile-description" style="margin:0;color:#555;">Aucune description</p>
+        </div>
+      </aside>
+
+
+  </div>
+
+  <script>
+    window.API_BASE = "http://localhost:3001";
+    window.API = window.API_BASE; // compat pour du code qui utilise "API"
+  </script>
+  
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="scripts/auth.js"></script>
+  <script src="scripts/contacts.js"></script>
+  <script src="scripts/groups.js"></script>
+  <script src="scripts/ui.js"></script>
+  <script src="scripts/tabs.js"></script>
+  <script src="scripts/main.js"></script>
+
+</body>
+</html>

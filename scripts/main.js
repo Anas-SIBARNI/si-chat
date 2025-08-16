@@ -9,6 +9,14 @@
    - Raccourcis robustes pour les sélecteurs du DOM (tolère variations d'IDs)
    - Conserve l’API REST de serveur_auth.js
 ===================================================== */
+const API_ORIGIN = window.API || window.API_BASE || "http://localhost:3001";
+function resolvePP(pp) {
+  if (!pp) return "img/default.jpg";
+  if (/^(https?:|data:)/i.test(pp)) return pp;   // absolu
+  if (pp.startsWith("/")) return `${API_ORIGIN}${pp}`; // relatif serveur
+  return pp; // relatif déjà bon
+}
+
 
 /* ------------------------
    Contexte / constantes
@@ -209,38 +217,70 @@
      Historique privé & groupe
   ------------------------ */
   async function loadPrivateDiscussion(contactId, contactName) {
+    // 1) État + UI de base
     activeGroupId   = null;
     activeContactId = parseInt(contactId, 10);
     window.activeGroupId   = null;
     window.activeContactId = activeContactId;
-
+  
     setHeaderTitle(contactName || "Discussion privée");
     showChat();
-
+  
     const body = el.chatBody();
     if (body) body.innerHTML = "";
+  
+    // 2) FICHE PROFIL à droite (utilise le HTML déjà présent)
+    try {
+      const panel = document.getElementById('profile-panel');
+      if (panel) {
+        const nameEl = document.getElementById('profile-name');
+        const descEl = document.getElementById('profile-description');
+        const ppDiv  = document.getElementById('profile-pp');
 
+        // état "chargement"
+        if (nameEl) nameEl.textContent = contactName || '';
+        if (descEl) descEl.textContent = 'Chargement…';
+        if (ppDiv)  ppDiv.style.backgroundImage = "none";
+
+        const p = await getUserProfileSafe(activeContactId);
+        if (p) {
+          if (nameEl) nameEl.textContent = p.username || '';
+          if (descEl) descEl.textContent = p.description || 'Aucune description';
+          if (ppDiv)  ppDiv.style.backgroundImage = `url('${resolvePP(p.pp)}')`;
+        } else {
+          if (nameEl) nameEl.textContent = 'Profil introuvable';
+          if (descEl) descEl.textContent = '';
+        }
+      }
+    } catch (e) {
+      console.error('[profile-panel] erreur:', e);
+    }
+
+  
+    // 3) Historique des messages
     try {
       const res  = await fetch(`${API}/private-messages?user1=${userId}&user2=${activeContactId}`);
       const list = await res.json();
-
-      // Prépare cache profils
+  
       const ids = new Set(list.map(m => m.sender_id).filter(Boolean));
       await Promise.all([...ids].map(getUserProfileSafe));
-
+  
       list.forEach(m => displayMessage({
         senderId: m.sender_id,
         content:  m.content,
         sender_pp: m.sender_pp,
         sender_username: m.sender_username
       }));
-
+  
       scrollChatToBottom({ smooth: false });
-      bindSendForm(); // (re)lier sur la bonne discussion
+      bindSendForm();
     } catch (err) {
       console.error("[main] Erreur historique privé :", err);
     }
   }
+  
+  
+  
 
   async function openGroupChat(groupId, groupName) {
     activeContactId = null;
