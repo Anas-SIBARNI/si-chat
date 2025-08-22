@@ -1,0 +1,96 @@
+/* ===== Wrapper du composer ===== */
+.input-wrapper{
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  background: #1e293b; /* cohérent sombre */
+  border: 1px solid #223042;
+  border-radius: 12px;
+  box-sizing: border-box;
+  overflow: hidden;
+  min-height: 48px;
+  min-width: 0;              /* important pour ne pas pousser la colonne */
+  box-shadow: 0 4px 18px rgba(0,0,0,.18);
+  backdrop-filter: blur(6px);
+  transition: box-shadow .2s ease, border-color .2s ease;
+}
+
+/* focus global sur le wrapper (via focus de l’input) */
+.input-wrapper:focus-within{
+  border-color: rgba(59,130,246,.45); /* bleu brand */
+  box-shadow: 0 0 0 3px rgba(59,130,246,.20);
+}
+
+/* ===== Champ texte ===== */
+.input-wrapper input{
+  flex: 1;
+  min-width: 0;
+  padding: .9rem 1rem;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: .95rem;
+  line-height: 1.4;
+  caret-color: var(--brand, #3b82f6);
+}
+.input-wrapper input::placeholder{
+  color: var(--muted, #94a3b8);
+  opacity: .9;
+}
+
+/* ===== Boutons (icône ou texte) ===== */
+.input-wrapper button{
+  border: none;
+  cursor: pointer;
+  user-select: none;
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, #10b981, #059669); /* ton vert actuel conservé */
+  padding: .9rem 1rem;         /* par défaut : bouton texte */
+  border-radius: 10px;         /* arrondi interne pour un look “pill” */
+  margin-right: 6px;           /* petite marge interne au wrapper */
+  transition: filter .2s ease, transform .06s ease;
+  flex-shrink: 0;
+}
+
+/* variante icône carrée si tu utilises des <button><svg>… */
+.input-wrapper button.icon{
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+}
+
+/* états */
+.input-wrapper button:hover{ filter: brightness(1.06); }
+.input-wrapper button:active{ transform: translateY(1px); }
+
+/* accessibilité : focus visible net */
+.input-wrapper button:focus-visible{
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(16,185,129,.35);
+}
+
+/* état disabled (ex. envoi en cours) */
+.input-wrapper button:disabled{
+  opacity: .6;
+  cursor: not-allowed;
+  filter: none;
+}
+
+/* ===== Responsif ===== */
+@media (max-width: 720px){
+  .input-wrapper{ min-height: 44px; }
+  .input-wrapper input{ padding: .75rem .85rem; font-size: .93rem; }
+  .input-wrapper button{ padding: .7rem .9rem; }
+}
+
+/* motion‑safe */
+@media (prefers-reduced-motion: reduce){
+  .input-wrapper,
+  .input-wrapper button{ transition: none; }
+}

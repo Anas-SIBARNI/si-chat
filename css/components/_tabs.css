@@ -1,0 +1,33 @@
+.tabs {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #333;
+}
+.tabs .nav { display: flex; gap: 1rem; }
+
+.tabs .nav button {
+    background: none;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+.tabs .nav button.active {
+    border-bottom: 2px solid #1d4ed8;
+    cursor: default;
+}
+.tabs .nav button:hover:not(.active) { background-color: #2e2e35; }
+
+.tabs .add-btn button {
+    background-color: #1d4ed8;
+    border: none;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.tabs .add-btn button:hover { background-color: #1e40af; }

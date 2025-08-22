@@ -1,0 +1,23 @@
+/* =============== Responsive / Media queries =============== */
+
+  /* <= 1180px : on masque le panneau profil et on garde 3 colonnes */
+  @media (max-width: 1180px){
+    .app-container{
+      grid-template-columns: var(--sidebar-w) var(--contacts-w) 1fr;
+    }
+    .profile{ display: none; }
+  }
+  
+  /* <= 820px : on masque la colonne contacts et on passe à 2 colonnes */
+  @media (max-width: 820px){
+    .app-container{
+      grid-template-columns: var(--sidebar-w) 1fr;
+    }
+    .contacts{ display: none; }
+  }
+  
+  /* Motion-safe : transitions réduites si l’utilisateur le demande */
+  @media (prefers-reduced-motion: reduce){
+    * { animation: none !important; transition: none !important; }
+  }
+  

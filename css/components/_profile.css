@@ -1,0 +1,73 @@
+/* ========== Profile panel (colonne droite) ========== */
+.profile-panel{
+    padding: var(--space-md, 16px);
+    border-left: 1px solid var(--border, #334155);
+    background: var(--panel, rgba(30,41,59,.75));
+    min-width: 0; /* évite les débordements en grid */
+  }
+  
+  /* Carte collante */
+  #profile-card{
+    position: sticky;
+    top: var(--space-sm, 12px);
+    display: grid;
+    gap: var(--space-sm, 12px);
+    padding: var(--space-md, 16px);
+    border-radius: var(--radius-lg, 14px);
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, #fff 4%, transparent),
+      color-mix(in srgb, #fff 2%, transparent)
+    );
+    border: 1px solid var(--card-border, rgba(255,255,255,.06));
+    box-shadow: var(--shadow-md, 0 8px 24px rgba(0,0,0,.25));
+  }
+  
+  /* Nom */
+  #profile-name{
+    margin: var(--space-sm, 8px) 0 0 0;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: .2px;
+    font-size: var(--text-md, 1.05rem);
+    color: var(--text-primary, #e5e7eb);
+  }
+  
+  /* Description */
+  #profile-description{
+    margin: 6px 0 0 0;
+    color: var(--text-muted, #cbd5e1);
+    line-height: 1.45;
+    background: var(--card-bg, rgba(255,255,255,.03));
+    border: 1px solid var(--card-border, rgba(255,255,255,.06));
+    padding: 10px 12px;
+    border-radius: var(--radius-md, 10px);
+    white-space: pre-wrap;
+  }
+  
+  /* Séparateur */
+  .profile-sep{
+    height: 1px;
+    background: var(--card-border, rgba(255,255,255,.06));
+    margin: var(--space-md, 12px) 0;
+  }
+  
+  /* Éléments complémentaires dans le panneau profil */
+  .profile-element{
+    width: min(250px, 100%);
+    background: var(--panel-2, #111827);
+    color: var(--text, #e5e7eb);
+    font-size: .9rem;
+    padding: 1rem;
+    border: 1px solid var(--border, #333);
+    border-radius: var(--radius-md, 8px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-sizing: border-box;
+  }
+  .profile-element h4{
+    margin-top: 0;
+    color: #fff;
+  }
+  

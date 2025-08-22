@@ -1,0 +1,107 @@
+body {
+    margin: 0;
+    min-height: 100dvh;
+    display: grid;
+    place-items: center;
+    background: var(--bg, #0f172a);
+    color: var(--text, #e5e7eb);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Poppins, Arial, sans-serif;
+  }
+  
+  /* Carte d’inscription (même esprit que .auth-card du login) */
+  .auth-container{
+    width: min(480px, 92vw);
+    background: var(--panel-2, #111827);
+    border: 1px solid var(--card-border, rgba(255,255,255,.1));
+    border-radius: var(--radius-lg, 12px);
+    padding: 24px 20px 18px;
+    box-shadow: var(--shadow-md, 0 10px 30px rgba(0,0,0,.35));
+    backdrop-filter: blur(6px);
+    box-sizing: border-box;
+  }
+  
+  .auth-container h2{
+    margin: 0 0 6px 0;
+    font-weight: 800;
+    letter-spacing: .2px;
+  }
+  
+  /* Formulaire vertical propre */
+  .auth-container form{
+    display: grid;
+    gap: 12px;
+    margin-top: 12px;
+  }
+  
+  .auth-container label{
+    font-size: .95rem;
+    color: var(--text-primary, #e5e7eb);
+    display: block;
+  }
+  
+  /* Inputs – même look que login (.input) sans exiger de classe */
+  .auth-container input[type="text"],
+  .auth-container input[type="email"],
+  .auth-container input[type="password"]{
+    width: 100%;
+    background: #1a1a1d;
+    border: 1px solid #3a3a3f;
+    color: #fff;
+    padding: 12px 12px;
+    border-radius: 10px;
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
+  .auth-container input:focus{
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37,99,235,.35);
+  }
+  
+  /* Bouton .btn déjà présent dans ton HTML -> on garde 100% largeur */
+  .auth-container .btn{
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    gap: .5rem;
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 14px;
+    cursor: pointer;
+    background: var(--brand, #2563eb);
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: filter .15s ease;
+  }
+  .auth-container .btn:hover { filter: brightness(1.04); }
+  .auth-container .btn[disabled]{ opacity: .6; cursor: not-allowed; }
+  
+  /* Messages d’état */
+  .auth-container .error{
+    display: none; /* activé en JS */
+    color: #ff9c9c;
+    background: #3a1f20;
+    border: 1px solid #6e2c2f;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: .95rem;
+  }
+  
+  /* Lien “Déjà inscrit ?” */
+  .auth-container p{
+    text-align: center;
+    margin-top: 12px;
+    color: var(--muted, #94a3b8);
+  }
+  .auth-container p a{
+    color: var(--brand-light, #93c5fd);
+    text-decoration: none;
+  }
+  .auth-container p a:hover{ text-decoration: underline; }
+  
+  /* Petit responsive */
+  @media (max-width: 420px){
+    .auth-container{ padding: 18px 14px 16px; }
+  }

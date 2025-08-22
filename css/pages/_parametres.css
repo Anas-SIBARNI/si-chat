@@ -1,0 +1,189 @@
+/* ===========================
+   Page Paramètres (profil)
+   =========================== */
+
+   .settings-container {
+    display: flex;
+    height: 100dvh;
+    background: var(--bg, #0f172a);
+    color: var(--text, #e5e7eb);
+  }
+  
+  /* ===== Sidebar ===== */
+  .settings-container .settings-sidebar {
+    width: 260px;
+    background: var(--panel-2, #111827);
+    border-right: 1px solid var(--border, #334155);
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+  
+  .settings-container .settings-sidebar h3 {
+    margin: 0 0 1rem 0;
+    text-align: center;
+    font-weight: 800;
+    letter-spacing: .2px;
+    color: var(--text-primary, #e5e7eb);
+  }
+  
+  .settings-container .settings-sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .settings-container .settings-sidebar li {
+    padding: .75rem .5rem;
+    border-radius: var(--radius-md, 8px);
+    border-left: 3px solid transparent;
+    cursor: pointer;
+    transition: background-color .2s ease, border-color .2s ease;
+    color: var(--text, #e5e7eb);
+  }
+  
+  .settings-container .settings-sidebar li:hover {
+    background: var(--card-bg-hover, rgba(255,255,255,.06));
+    border-left-color: var(--brand, #1d4ed8);
+  }
+  
+  .settings-container .settings-sidebar li.active {
+    background: color-mix(in srgb, var(--brand, #1d4ed8) 12%, transparent);
+    border-left-color: var(--brand, #1d4ed8);
+  }
+  
+  .settings-container .settings-sidebar a {
+    color: inherit;
+    text-decoration: none;
+  }
+  
+  /* ===== Main ===== */
+  .settings-container .settings-main {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+    box-sizing: border-box;
+    min-width: 0;
+  }
+  
+  /* Carte centrale */
+  .settings-container .settings-element {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem;
+    border-radius: var(--radius-lg, 12px);
+    background: var(--panel, rgba(30,41,59,.75));
+    border: 1px solid var(--card-border, rgba(255,255,255,.1));
+    box-shadow: var(--shadow-md, 0 6px 12px rgba(0,0,0,.22), 0 4px 6px rgba(0,0,0,.18));
+    backdrop-filter: blur(6px);
+  }
+  
+  .settings-container .settings-element h2 {
+    margin: .75rem 0 1.5rem 0;
+    text-align: center;
+    font-weight: 800;
+    font-size: clamp(1.15rem, 1.6vw, 1.35rem);
+    color: var(--text-primary, #e5e7eb);
+  }
+  
+  /* PP au sommet (clic pour changer) */
+  .settings-container .settings-element .pp {
+    --pp-size: var(--pp-xl, 88px);
+    width: var(--pp-size);
+    height: var(--pp-size);
+    border-radius: 50%;
+    background: var(--pp-bg, #475569) center/cover no-repeat;
+    margin: 0 auto 1rem auto;
+    border: 3px solid rgba(255,255,255,.12);
+    box-shadow: 0 8px 20px rgba(0,0,0,.35);
+    cursor: pointer;
+    transition: transform .1s ease, box-shadow .2s ease;
+  }
+  .settings-container .settings-element .pp:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 24px rgba(0,0,0,.40);
+  }
+  
+  /* Rows d’édition */
+  .settings-container .settings-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: .75rem 0;
+    border-bottom: 1px solid var(--card-border, rgba(255,255,255,.1));
+  }
+  
+  .settings-container .settings-row strong {
+    display: block;
+    font-weight: 700;
+    margin-bottom: .15rem;
+    color: var(--text-primary, #e5e7eb);
+  }
+  
+  .settings-container .settings-row p {
+    margin: 0;
+    color: var(--text-muted, #94a3b8);
+  }
+  
+  /* Boutons actions (on suit ta base .btn si présente) */
+  .settings-container .settings-row button {
+    appearance: none;
+    border: none;
+    border-radius: var(--radius-md, 8px);
+    padding: .6rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    color: #fff;
+    background: var(--brand, #2563eb);
+    transition: background-color .2s ease, box-shadow .2s ease, transform .06s ease;
+  }
+  .settings-container .settings-row button:hover {
+    background: #1e40af;
+  }
+  .settings-container .settings-row button:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand, #1d4ed8) 35%, transparent);
+  }
+  .settings-container .settings-row button:active {
+    transform: translateY(1px);
+  }
+  
+  /* Bouton danger pleine largeur */
+  .settings-container .settings-element .danger {
+    display: block;
+    width: 100%;
+    margin-top: 1.25rem;
+    appearance: none;
+    border: none;
+    border-radius: var(--radius-md, 8px);
+    padding: .8rem 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: #fff;
+    background: #dc2626;
+    transition: background-color .2s ease, box-shadow .2s ease, transform .06s ease;
+  }
+  .settings-container .settings-element .danger:hover {
+    background: #b91c1c;
+  }
+  .settings-container .settings-element .danger:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(220,38,38,.35);
+  }
+  .settings-container .settings-element .danger:active {
+    transform: translateY(1px);
+  }
+  
+  /* Accessibilité / compat focus */
+  @supports not (color: color-mix(in srgb, #000 50%, #fff)) {
+    .settings-container .settings-row button:focus-visible {
+      box-shadow: 0 0 0 3px rgba(29,78,216,.35);
+    }
+  }
+  
+  /* Responsive léger (le reste est dans objects/_media.css) */
+  @media (max-width: 720px){
+    .settings-container .settings-sidebar { width: 220px; }
+    .settings-container .settings-element { padding: 1.25rem; }
+  }
+  

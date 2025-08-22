@@ -1,52 +1,76 @@
+/* ============================================================================
+   contacts.js — liste des amis (colonne Discussions)
+   Rôle:
+     - Récupère /friends/:userId
+     - Rend dans #discussions-list (avec fallbacks)
+     - Ouvre une DM au clic (via callback onOpen)
+     - autoOpenFirst: ouvre la 1ʳᵉ DM (onglet Messages)
+   Dépend de: window.API (/api fallback), resolvePP/escapeHtml (optionnels)
+============================================================================ */
 
-/* =====================================================
-   contacts.js — liste des amis
-   - Récupère les contacts via /friends/:userId
-   - Rend la liste dans #contact-list (ou un fallback)
-   - Permet d'ouvrir une discussion au clic
-   - Option autoOpenFirst pour ouvrir la 1ʳᵉ discussion (Messages)
-===================================================== */
 (function () {
-  const API = "http://localhost:3001";
+  // Base API (unifiée)
+  const CONTACTS_API = window.API || window.API_BASE || "/api";
 
-  function getUserId() {
-    return parseInt(localStorage.getItem("userId") || "0", 10);
-  }
+  // Helpers locaux
+  const getUserId = () => Number.parseInt(localStorage.getItem("userId") || "0", 10);
+  const EH = (s) => (typeof window.escapeHtml === "function" ? window.escapeHtml(s) : String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])));
+  const PP = (u) => (typeof window.resolvePP === "function" ? window.resolvePP(u) : (u || "img/default.jpg"));
 
+  /* ---------------------------------
+     Ciblage du conteneur de liste
+  ---------------------------------- */
   function getListContainer() {
+    // cible idéale (nouvelle)
     return (
+      document.getElementById("discussions-list") ||
+      // anciens ids/classes éventuellement présents
       document.getElementById("contact-list") ||
       document.querySelector(".contact-list") ||
       document.querySelector("#user-conversations-list") ||
+      // fallback: on crée une liste dans la colonne Discussions
       createFallbackList()
     );
   }
 
   function createFallbackList() {
-    const container = document.querySelector(".contacts-panel") || document.getElementById("contact-section") || document.querySelector(".sidebar") || document.body;
-    const ul = document.createElement("div");
-    ul.id = "contact-list";
-    container.appendChild(ul);
-    return ul;
+    const container =
+      document.getElementById("discussions-section") ||
+      document.querySelector("#discussions-section") ||
+      document.querySelector(".sidebar") ||
+      document.body;
+
+    const div = document.createElement("div");
+    div.id = "discussions-list";
+    container.appendChild(div);
+    return div;
   }
 
+  /* ---------------------------------
+     UI: marquer l’item actif
+  ---------------------------------- */
   function markActive(contactId) {
-    document.querySelectorAll("#contact-list .contact-item").forEach(el => {
-      if (String(el.dataset.contactId) === String(contactId)) el.classList.add("active");
-      else el.classList.remove("active");
+    const list = getListContainer();
+    list.querySelectorAll(".contact-item").forEach(el => {
+      el.classList.toggle("active", String(el.dataset.contactId) === String(contactId));
     });
   }
 
+  /* ---------------------------------
+     UI: une ligne de contact
+  ---------------------------------- */
   function row(contact, onOpen) {
     const div = document.createElement("div");
     div.className = "contact-item";
     div.dataset.contactId = contact.id;
 
-    const pp = (contact.pp || "img/default.jpg").replace(/"/g, "&quot;");
+    const pp = PP(contact.pp).replace(/"/g, "&quot;");
+    const name = EH(contact.username);
+
     div.innerHTML = `
       <div class="pp" style="background-image:url('${pp}'); background-size:cover; background-position:center;"></div>
       <div class="labels">
-        <strong>${contact.username}</strong>
+        <strong>${name}</strong>
         <small class="muted">${contact.isOnline ? "En ligne" : "Hors ligne"}</small>
       </div>
     `;
@@ -59,15 +83,20 @@
     return div;
   }
 
+  /* ---------------------------------
+     Charger et afficher les contacts
+  ---------------------------------- */
   async function loadContacts(autoOpenFirst = false, onOpen = null) {
-    const userId = getUserId();
-    if (!userId) return;
+    const uid = getUserId();
+    if (!uid) return;
 
     const list = getListContainer();
     list.innerHTML = "";
 
     try {
-      const res = await fetch(`${API}/friends/${userId}`);
+      const res = await fetch(`${CONTACTS_API}/friends/${uid}`);
+      if (!res.ok) throw new Error("HTTP " + res.status);
+
       const friends = await res.json();
 
       if (!Array.isArray(friends) || friends.length === 0) {
@@ -75,23 +104,153 @@
         return;
       }
 
-      // (option) trier par "plus récent" si tu as un champ (à adapter)
-      // friends.sort((a, b) => new Date(b.last_message_at) - new Date(a.last_message_at));
+      // (option) trier par dernier message si dispo (à activer quand champ présent)
+      // friends.sort((a,b) => new Date(b.last_message_at) - new Date(a.last_message_at));
 
       friends.forEach(f => list.appendChild(row(f, onOpen)));
 
       if (autoOpenFirst) {
         const first = friends[0];
         markActive(first.id);
-        if (typeof onOpen === "function") onOpen(first);
+        if (typeof onOpen === "function") onOpen(first);/* ============================================================================
+        contacts.js — liste des amis (colonne Discussions)
+        Rôle:
+          - Récupère /friends/:userId
+          - Rend dans #discussions-list (avec fallbacks)
+          - Ouvre une DM au clic (via callback onOpen)
+          - autoOpenFirst: ouvre la 1ʳᵉ DM (onglet Messages)
+        Dépend de: window.API (/api fallback), resolvePP/escapeHtml (optionnels)
+     ============================================================================ */
+     
+     (function () {
+       // Base API (unifiée)
+       const CONTACTS_API = window.API || window.API_BASE || "/api";
+     
+       // Helpers locaux
+       const getUserId = () => Number.parseInt(localStorage.getItem("userId") || "0", 10);
+       const EH = (s) => (typeof window.escapeHtml === "function" ? window.escapeHtml(s) : String(s ?? "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])));
+       const PP = (u) => (typeof window.resolvePP === "function" ? window.resolvePP(u) : (u || "img/default.jpg"));
+     
+       /* ---------------------------------
+          Ciblage du conteneur de liste
+       ---------------------------------- */
+       function getListContainer() {
+         // cible idéale (nouvelle)
+         return (
+           document.getElementById("discussions-list") ||
+           // anciens ids/classes éventuellement présents
+           document.getElementById("contact-list") ||
+           document.querySelector(".contact-list") ||
+           document.querySelector("#user-conversations-list") ||
+           // fallback: on crée une liste dans la colonne Discussions
+           createFallbackList()
+         );
+       }
+     
+       function createFallbackList() {
+         const container =
+           document.getElementById("discussions-section") ||
+           document.querySelector("#discussions-section") ||
+           document.querySelector(".sidebar") ||
+           document.body;
+     
+         const div = document.createElement("div");
+         div.id = "discussions-list";
+         container.appendChild(div);
+         return div;
+       }
+     
+       /* ---------------------------------
+          UI: marquer l’item actif
+       ---------------------------------- */
+       function markActive(contactId) {
+         const list = getListContainer();
+         list.querySelectorAll(".contact-item").forEach(el => {
+           el.classList.toggle("active", String(el.dataset.contactId) === String(contactId));
+         });
+       }
+     
+       /* ---------------------------------
+          UI: une ligne de contact
+       ---------------------------------- */
+       function row(contact, onOpen) {
+         const div = document.createElement("div");
+         div.className = "contact-item";
+         div.dataset.contactId = contact.id;
+     
+         const pp = PP(contact.pp).replace(/"/g, "&quot;");
+         const name = EH(contact.username);
+     
+         div.innerHTML = `
+           <div class="pp" style="background-image:url('${pp}'); background-size:cover; background-position:center;"></div>
+           <div class="labels">
+             <strong>${name}</strong>
+             <small class="muted">${contact.isOnline ? "En ligne" : "Hors ligne"}</small>
+           </div>
+         `;
+     
+         div.addEventListener("click", () => {
+           markActive(contact.id);
+           if (typeof onOpen === "function") onOpen(contact);
+         });
+     
+         return div;
+       }
+     
+       /* ---------------------------------
+          Charger et afficher les contacts
+       ---------------------------------- */
+       async function loadContacts(autoOpenFirst = false, onOpen = null) {
+         const uid = getUserId();
+         if (!uid) return;
+     
+         const list = getListContainer();
+         list.innerHTML = "";
+     
+         try {
+           const res = await fetch(`${CONTACTS_API}/friends/${uid}`);
+           if (!res.ok) throw new Error("HTTP " + res.status);
+     
+           const friends = await res.json();
+     
+           if (!Array.isArray(friends) || friends.length === 0) {
+             list.innerHTML = `<div class="empty muted">Aucun contact</div>`;
+             return;
+           }
+     
+           // (option) trier par dernier message si dispo (à activer quand champ présent)
+           // friends.sort((a,b) => new Date(b.last_message_at) - new Date(a.last_message_at));
+     
+           friends.forEach(f => list.appendChild(row(f, onOpen)));
+     
+           if (autoOpenFirst) {
+             const first = friends[0];
+             markActive(first.id);
+             if (typeof onOpen === "function") onOpen(first);
+           }
+         } catch (err) {
+           console.error("[contacts] chargement:", err);
+           list.innerHTML = `<div class="error">Erreur de chargement</div>`;
+         }
+       }
+     
+       /* ---------------------------------
+          Exports globaux
+       ---------------------------------- */
+       window.loadContacts = loadContacts;
+       window.__markActiveContact = markActive;
+     })();
+     
       }
     } catch (err) {
-      console.error("[contacts] Erreur chargement :", err);
+      console.error("[contacts] chargement:", err);
       list.innerHTML = `<div class="error">Erreur de chargement</div>`;
     }
   }
 
-  // Expose API
+  /* ---------------------------------
+     Exports globaux
+  ---------------------------------- */
   window.loadContacts = loadContacts;
   window.__markActiveContact = markActive;
 })();

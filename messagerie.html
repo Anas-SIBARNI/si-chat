@@ -4,9 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Messagerie</title>
-  <link rel="stylesheet" href="css/css.css" />
-  <link rel="stylesheet" href="css/fiche.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
   <div class="app-container">
@@ -17,10 +15,11 @@
         <ul>
           <li id="nav-discussions" class="active"><i class="fa fa-comments"></i></li>
           <li id="nav-groups">G</li>
-          <li id="nav-friends">F</li> <!-- (fix) retiré </i> en trop -->
+          <li id="nav-friends" class="nav-btn" data-target="contacts">F</li>
           <li><a href="parametres.html"><i class="fa fa-cog"></i></a></li>
         </ul>
       </nav>
+      
       
       <div class="user-footer">
         <!-- (fix) chemin image -->
@@ -34,7 +33,7 @@
     </style>
     
     <!-- Discussions privées -->
-    <section class="contacts" id="contact-section">
+    <section class="contacts" id="discussions-section">
       <h2>Discussions</h2>
       <div id="discussions-list"></div>
     </section>
@@ -62,9 +61,28 @@
           <button type="submit" id="send-btn"><i class="fa fa-paper-plane"></i></button>
         </div>
       </form>
+
+      <!-- SECTION CONTACTS CONTACTc(MASQUÉE PAR DÉFAUT) -->
+      <section id="contacts-section" class="hidden" aria-label="Contacts">
+        <div class="tabs">
+          <div class="nav">
+            <button id="tab-online"  class="active" onclick="switchTab('online')">En ligne</button>
+            <button id="tab-all"                 onclick="switchTab('all')">Tous</button>
+            <button id="tab-pending"             onclick="switchTab('pending')">En attente</button>
+            <button id="tab-add"                 onclick="switchTab('add')">Ajouter</button>
+            <button id="tab-groups"              onclick="switchTab('groups')">Groupes</button>
+          </div>
+        </div>
+
+        <div id="tab-content">
+          <!-- Contenu injecté par switchTab(tab) -->
+        </div>
+      </section>
+
+
+      
     </main>
 
-    <!-- Panneau fiche profil (droite) -->
     
       <!-- Panneau fiche profil (droite) -->
       <aside id="profile-panel" class="profile-panel" aria-label="Fiche profil de l'interlocuteur">
@@ -79,17 +97,25 @@
   </div>
 
   <script>
-    window.API_BASE = "http://localhost:3001";
+    window.API_BASE = "/api";
     window.API = window.API_BASE; // compat pour du code qui utilise "API"
   </script>
   
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-  <script src="scripts/auth.js"></script>
-  <script src="scripts/contacts.js"></script>
-  <script src="scripts/groups.js"></script>
-  <script src="scripts/ui.js"></script>
-  <script src="scripts/tabs.js"></script>
-  <script src="scripts/main.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+
+  <script src="scripts/socket.js?v=2"></script>
+  <script src="scripts/discussions.js?v=2"></script>
+  <script src="scripts/contacts.js?v=2"></script>
+  <script src="scripts/groups.js?v=2"></script>
+  <script src="scripts/navigation.js?v=2"></script>
+  <script src="scripts/ui.js?v=2"></script>
+  <script src="scripts/parametres.js?v=2"></script>
+  <script src="scripts/tabs.js?v=2"></script>
+  
+  <script src="scripts/main.js?v=2"></script>
+  
+  
+
 
 </body>
 </html>

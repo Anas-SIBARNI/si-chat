@@ -1,0 +1,73 @@
+.app-container {
+   height: 100vh;
+   width: 100%;
+   display: grid;
+   grid-template-columns: var(--sidebar-w) var(--contacts-w) 1fr var(--profile-w);
+   grid-template-rows: 100%;
+   position: relative;       /* nécessaire pour gérer les z-index enfants */
+   overflow: hidden;         /* évite les scrollbars globales */
+ }
+ 
+ /* colonnes latérales (facteur commun) */
+ .sidebar,
+ .contacts,
+ .profile {
+   background: var(--panel);
+   border-color: var(--border);
+   min-width: 0;             /* évite les débordements de contenu */
+   overflow-y: auto;         /* chaque colonne scrolle dans sa zone */
+ }
+ 
+ /* placement + séparateurs */
+ .sidebar  { grid-column: 1; grid-row: 1; border-right: 1px solid var(--border); z-index: 2; }
+ .contacts { grid-column: 2; grid-row: 1; border-right: 1px solid var(--border); z-index: 1; }
+ .profile  { grid-column: 4; grid-row: 1; border-left:  1px solid var(--border); z-index: 1; }
+ 
+ /* zone chat */
+ .chat {
+   grid-column: 3;
+   grid-row: 1;
+   background: var(--bg);
+   display: grid;
+   grid-template-rows: var(--header-h) 1fr var(--footer-h);
+   min-width: 0;             /* important pour que le flux texte ne force pas la largeur */
+   z-index: 0;
+ }
+ 
+ /* header/footer collants dans la zone chat (sans changer les couleurs) */
+ .chat > .chat-header {
+   position: sticky;
+   top: 0;
+   z-index: 3;
+   backdrop-filter: saturate(180%) blur(6px); /* léger effet verre teinté */
+ }
+ 
+ .chat > .chat-footer {
+   position: sticky;
+   bottom: 0;
+   z-index: 3;
+   backdrop-filter: saturate(180%) blur(6px);
+ }
+ 
+ /* la partie messages (le centre) scrolle proprement */
+ .chat > .chat-body {
+   overflow-y: auto;
+   min-height: 0; /* évite l’étirement qui casse le scroll */
+ }
+ 
+ /* optionnel : scrollbar discrète (ne touche pas à la palette) */
+ .sidebar::-webkit-scrollbar,
+ .contacts::-webkit-scrollbar,
+ .profile::-webkit-scrollbar,
+ .chat > .chat-body::-webkit-scrollbar {
+   width: 8px;
+   height: 8px;
+ }
+ .sidebar::-webkit-scrollbar-thumb,
+ .contacts::-webkit-scrollbar-thumb,
+ .profile::-webkit-scrollbar-thumb,
+ .chat > .chat-body::-webkit-scrollbar-thumb {
+   background: rgba(255,255,255,0.12);
+   border-radius: 8px;
+ }
+ 

@@ -1,0 +1,78 @@
+/* ===== Wrapper d’un message ===== */
+.chat-message{
+    display: flex;
+    align-items: flex-start;
+    gap: .6rem;
+    margin-bottom: .8rem;      /* spacing vertical uniforme */
+  }
+  
+  /* moi → à droite ; autre → à gauche */
+  .chat-message.me { justify-content: flex-end; }
+  .chat-message.other { justify-content: flex-start; }
+  
+  /* ===== Bloc texte (pile: pseudo‑entête + bulle) ===== */
+  .text-block{
+    display: flex;
+    flex-direction: column;
+    max-width: min(75ch, 72%); /* borne lisible / évite d’écraser la colonne */
+    min-width: 0;
+  }
+  
+  /* pseudo‑entête (nom) */
+  .sender-line{
+    font-weight: 700;
+    font-size: .9rem;
+    color: #cbd5e1;
+    margin-bottom: 2px;
+  }
+  
+  /* ===== Bulle ===== */
+  .content-line{
+    padding: .6rem .9rem;
+    border-radius: 14px;
+    line-height: 1.45;
+    color: #fff;
+    background: linear-gradient(135deg, #1f2937, #374151);
+    box-shadow: 0 2px 10px rgba(0,0,0,.25);
+    overflow-wrap: anywhere;   /* gère très longs mots/urls */
+    word-break: normal;
+  }
+  
+  /* variantes */
+  .chat-message.me   .content-line{
+    background: linear-gradient(135deg, var(--brand), #1e40af);
+    border-top-right-radius: 10px;   /* léger différentiel pour la lecture */
+  }
+  .chat-message.other .content-line{
+    background: linear-gradient(135deg, #1f2937, #374151);
+    border-top-left-radius: 10px;
+  }
+  
+  /* états (hover léger pour focus) */
+  .chat-message:hover .content-line{
+    box-shadow: 0 4px 18px rgba(0,0,0,.28);
+  }
+  
+  /* pièces jointes (images) dans la bulle */
+  .content-line img{
+    max-width: 100%;
+    height: auto;
+    border-radius: 10px;
+    display: block;
+  }
+  
+  /* liens dans les bulles */
+  .content-line a{
+    color: #93c5fd;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  
+  /* time/meta optionnel sur une 3e ligne si tu en as une */
+  .meta-line{
+    margin-top: 4px;
+    font-size: .74rem;
+    color: var(--muted);
+    align-self: flex-end;
+  }
+  

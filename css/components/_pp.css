@@ -1,0 +1,102 @@
+/* =========================
+   PP — Photo de profil
+   ========================= */
+
+/* Base */
+.pp{
+  width: var(--pp-size, 40px);
+  height: var(--pp-size, 40px);
+  border-radius: 50%;
+  background: var(--pp-bg, #475569) center/cover no-repeat;
+  display: inline-block;
+  flex-shrink: 0;
+  position: relative; /* pour le .status interne */
+}
+
+/* Modificateurs de taille (utilisables partout) */
+.pp--xs { --pp-size: var(--pp-xs, 30px); }  /* messages dans le flux */
+.pp--sm { --pp-size: var(--pp-sm, 32px); }  /* sidebar compacte */
+.pp--md { --pp-size: var(--pp-md, 40px); }  /* cartes contacts par défaut */
+.pp--lg { --pp-size: var(--pp-lg, 46px); }  /* header de chat */
+.pp--xl { --pp-size: var(--pp-xl, 88px); }  /* fiche profil */
+
+/* =========================
+   Mappings contextuels
+   (aucun changement visuel)
+   ========================= */
+
+/* Footer utilisateur (42px) */
+.user-footer .pp{
+  --pp-size: var(--pp-user-footer, 42px);
+  background: var(--pp-bg, #475569) center/cover no-repeat;
+}
+
+/* Carte contact / listes */
+.contact-item .pp,
+.contacts .contact .pp,
+.contact-list > li .pp{
+  --pp-size: var(--pp-md, 40px);
+  background: var(--pp-bg-card, #2e2e35) center/cover no-repeat;
+}
+
+/* Header chat */
+.chat-header .peer .pp{
+  --pp-size: var(--pp-lg, 46px);
+  background: var(--pp-bg, #475569) center/cover no-repeat;
+}
+
+/* Message bubble (avatar à côté des messages) */
+.pp-message{
+  --pp-size: var(--pp-xs, 30px);
+  width: var(--pp-size);
+  height: var(--pp-size);
+  border-radius: 50%;
+  background: center/cover no-repeat;
+  flex-shrink: 0;
+}
+
+/* Profil (panneau droit) */
+.profile .pp{
+  --pp-size: var(--pp-xl, 88px);
+  width: var(--pp-size);
+  height: var(--pp-size);
+  margin: 10px 0;
+  border-radius: 50%;
+  background: #475569 center/cover no-repeat;
+}
+
+/* Variante “ring” pour la PP du profil (remplace l’ancien #profile-pp) */
+#profile-pp{
+  --pp-size: var(--pp-xl, 88px);
+  width: var(--pp-size);
+  height: var(--pp-size);
+  border-radius: 50%;
+  background-color: #111827;
+  background-position: center;
+  background-size: cover;
+  border: 3px solid rgba(255,255,255,.12);
+  box-shadow: 0 8px 20px rgba(0,0,0,.35);
+  margin-inline: auto;
+}
+
+/* Sidebar compacte */
+.sidebar .pp{
+  --pp-size: var(--pp-sm, 32px);
+  background-color: #444;
+}
+
+/* =========================
+   Statut en ligne
+   ========================= */
+
+.status{
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: var(--pp-status, 10px);
+  height: var(--pp-status, 10px);
+  border-radius: 50%;
+  border: 2px solid var(--panel, #1e293b);
+  background: #6b7280; /* offline */
+}
+.status.online{ background: var(--success, #10b981); }

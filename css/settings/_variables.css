@@ -1,0 +1,81 @@
+:root{
+  /* Layout */
+  --sidebar-w: 100px;
+  --contacts-w: 260px;
+  --profile-w: 300px;
+
+  --header-h: 64px;
+  --footer-h: 74px;
+
+  /* Background & panels */
+  --bg: #0f172a;
+  --panel: rgba(30,41,59,.75);
+  --panel-2: #111827;
+  --border: #334155;
+
+  /* Texte */
+  --text: #e5e7eb;
+  --muted: #94a3b8;
+  --text-primary: #e5e7eb;
+  --text-muted: #9ca3af;
+  --text-subtle: #6b7280;
+  --text-on-brand: #ffffff;
+
+  --item-my: 2px;
+  --item-mx: 4px;
+
+  --badge-px: 8px;
+  --badge-py: 4px;
+
+  --text-xs: .73rem;
+  --text-sm: .82rem;
+
+  /* Couleurs principales */
+  --brand: #1d4ed8;
+  --brand-dark: #1e3a8a;
+  --brand-light: #93c5fd;
+  --success: #10b981;
+
+  /* Messages (bubbles) */
+  --bubble-default: #2b2b30;   /* messages de groupe */
+  --bubble-incoming: #2e2e35;  /* messages reçus */
+  --bubble-outgoing: var(--brand); /* messages envoyés */
+
+  /* Cartes & composants */
+  --card-bg: rgba(255,255,255,.03);
+  --card-bg-hover: rgba(255,255,255,.06);
+  --card-border: rgba(255,255,255,.08);
+  --card-border-hover: rgba(255,255,255,.16);
+
+  /* Rayons */
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 999px;
+
+  /* Espaces */
+  --space-xs: 0.5rem;
+  --space-sm: 0.6rem;
+  --space-md: 1rem;
+
+  /* Ombres */
+  --shadow-md: 0 6px 12px rgba(0,0,0,.22), 0 4px 6px rgba(0,0,0,.18);
+
+  /*pp*/
+  --pp-xs: 30px;
+  --pp-sm: 32px;
+  --pp-md: 40px;
+  --pp-lg: 46px;
+  --pp-xl: 88px;
+  --pp-user-footer: 42px;
+  --pp-status: 10px;
+
+  --pp-bg: #475569;
+  --pp-bg-card: #2e2e35;
+
+  /*media*/
+  --bp-lg: 1180px;
+    --bp-md: 820px;
+    --bp-sm: 640px;
+
+  --color-scheme: dark;
+}

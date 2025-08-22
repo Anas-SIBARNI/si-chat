@@ -1,0 +1,66 @@
+/* ============ Bouton de base ============ */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+  
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.2;
+  
+    color: #fff;
+    background-color: #2563eb;
+  
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+  
+    cursor: pointer;
+    user-select: none;
+  
+    transition: background-color .25s ease, box-shadow .25s ease, transform .06s ease;
+  }
+  
+  .btn:hover {
+    background-color: #1e40af; /* shade plus sombre */
+  }
+  
+  .btn:active {
+    transform: translateY(1px);
+  }
+  
+  .btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(37,99,235,.35);
+  }
+  
+  .btn:disabled {
+    opacity: .6;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+  
+  /* ============ Variantes ============ */
+  .btn--sm { padding: 0.4rem 0.9rem; font-size: .875rem; }
+  .btn--lg { padding: 1rem 2rem; font-size: 1.125rem; }
+  
+  .btn--success { background-color: #10b981; }
+  .btn--success:hover { background-color: #059669; }
+  
+  .btn--danger  { background-color: #dc2626; }
+  .btn--danger:hover { background-color: #b91c1c; }
+  
+  /* ============ Bouton suppression spécifique ============ */
+  .delete-msg {
+    background: none;
+    border: none;
+    color: #ef4444;
+    font-size: 1rem;
+    margin-left: 8px;
+    cursor: pointer;
+    padding: 0; /* supprime le padding par défaut */
+    transition: color .2s ease;
+  }
+  .delete-msg:hover { color: #dc2626; }
+  
