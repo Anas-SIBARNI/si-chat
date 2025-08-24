@@ -27,6 +27,7 @@
 @import url('./components/_message-bubble.css');
 @import url('./components/_chat-composer.css');
 @import url('./components/_profile.css');
+@import url('./components/_sidebar.css');
 
 /* Pages */
 @import url('./pages/_index.css');

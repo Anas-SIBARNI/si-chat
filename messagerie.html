@@ -8,25 +8,32 @@
 </head>
 <body>
   <div class="app-container">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="logo"><img src="img/bulles3D.png" alt="Illustration Messagerie Logo" height="50" width="50"></div>
-      <nav>
-        <ul>
-          <li id="nav-discussions" class="active"><i class="fa fa-comments"></i></li>
-          <li id="nav-groups">G</li>
-          <li id="nav-friends" class="nav-btn" data-target="contacts">F</li>
-          <li><a href="parametres.html"><i class="fa fa-cog"></i></a></li>
-        </ul>
-      </nav>
-      
-      
-      <div class="user-footer">
-        <!-- (fix) chemin image -->
-        <div class="pp" style="background-image:url('img/default.jpg')"></div>
-        <span id="username">Username</span>
-      </div>
-    </aside>
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar__logo">
+    <img src="img/bulles3D.png" alt="Logo">
+  </div>
+
+  <nav class="sidebar__nav">
+    <ul>
+      <li id="nav-discussions" class="active"><a href="#" data-label="Discussions"><span class="btn-label">D</span></a></li>
+      <li id="nav-groups"><a href="#" data-label="Groupes"><span class="btn-label">G</span></a></li>
+      <li id="nav-friends"><a href="#" data-label="Contacts"><span class="btn-label">C</span></a></li>
+    </ul>
+  </nav>
+  
+  
+  
+
+  <a href="parametres.html" class="sidebar__user">
+    <div class="pp" style="background-image:url('img/default.jpg')"></div>
+    <span id="username">Username</span>
+  </a>
+</aside>
+
+
+
+
 
     <style>
       .sidebar nav ul li a[href="parametres.html"]:visited { color: inherit; }
@@ -63,7 +70,7 @@
       </form>
 
       <!-- SECTION CONTACTS CONTACTc(MASQUÉE PAR DÉFAUT) -->
-      <section id="contacts-section" class="hidden" aria-label="Contacts">
+      <section id="contacts-section" class="hidden" aria-label="Contacts" style="display:none;">
         <div class="tabs">
           <div class="nav">
             <button id="tab-online"  class="active" onclick="switchTab('online')">En ligne</button>

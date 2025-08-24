@@ -78,4 +78,14 @@
     --bp-sm: 640px;
 
   --color-scheme: dark;
+
+  --sb-bg: #0f172a;
+  --sb-fg: #e2e8f0;
+  --sb-muted: #cbd5e1;
+  --sb-border: rgba(255,255,255,0.10);
+  --sb-border-strong: rgba(255,255,255,0.18);
+  --sb-surface: rgba(255,255,255,0.06);
+  --sb-surface-hover: rgba(255,255,255,0.12);
+  --sb-accent: #2b6cff;
+  --sb-accent-ring: rgba(43,108,255,.12);
 }
