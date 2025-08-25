@@ -1,0 +1,120 @@
+/* ====== Demandes de contact en attente ================================= */
+
+.pending-item{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    margin: 10px 0;
+    border-radius: 14px;
+    background: var(--tile-bg);
+    border: 1px solid var(--panel-border);
+    color: var(--fg-strong);
+    transition: background .15s ease, box-shadow .15s ease, transform .12s ease;
+    will-change: transform;
+  }
+  
+  .pending-item:hover{
+    background: var(--tile-hover);
+    box-shadow: 0 6px 14px rgba(0,0,0,.08);
+  }
+  
+  /* pp */
+  .pending-item .pp{
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid color-mix(in srgb, var(--brand) 25%, transparent);
+    background-size: cover !important;
+    background-position: center !important;
+  }
+  
+  /* username */
+  .pending-item > span{
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--fg-strong);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* bloc actions — cible l’élément inline style sans toucher le JS */
+  .pending-item > div[style*="margin-left:auto"]{
+    display: flex;
+    gap: 10px;
+    margin-left: auto !important; /* garde l’alignement à droite */
+  }
+  
+  /* boutons */
+  .pending-item button{
+    width: 38px;
+    height: 38px;
+    border: none;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,.12);
+    transition: transform .1s ease, filter .15s ease, box-shadow .15s ease;
+    outline: none;
+  }
+  
+  /* focus visible (clavier) */
+  .pending-item button:focus-visible{
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-2) 30%, transparent);
+  }
+  
+  /* accepter ✔️ */
+  .pending-item button:first-of-type{
+    background: linear-gradient(180deg, #22c55e, #16a34a);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(34,197,94,.35);
+  }
+  .pending-item button:first-of-type:hover{
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+  }
+  
+  /* refuser ❌ */
+  .pending-item button:last-of-type{
+    background: linear-gradient(180deg, #ef4444, #b91c1c);
+    color: #fff;
+    box-shadow: 0 4px 10px rgba(239,68,68,.35);
+  }
+  .pending-item button:last-of-type:hover{
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+  }
+  
+  /* états optionnels si tu appliques une classe après réponse */
+  .pending-item--accepted{
+    border-color: color-mix(in srgb, #22c55e 45%, var(--panel-border));
+    background: color-mix(in srgb, #22c55e 12%, var(--tile-bg));
+  }
+  .pending-item--refused{
+    border-color: color-mix(in srgb, #ef4444 45%, var(--panel-border));
+    background: color-mix(in srgb, #ef4444 10%, var(--tile-bg));
+    opacity: .75;
+  }
+  
+  /* conteneur de liste (si tu as un parent) */
+  .pending-list{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  /* responsive */
+  @media (max-width: 520px){
+    .pending-item{
+      gap: 10px;
+      padding: 10px 12px;
+    }
+    .pending-item > span{
+      max-width: 50vw;
+    }
+  }
+  

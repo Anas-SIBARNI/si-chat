@@ -30,6 +30,8 @@
 @import url('./components/_sidebar.css');
 @import url('./components/_group_form.css');
 @import url('./components/_add-contact.css');
+@import url('./components/_pending.css');
+
 
 /* Pages */
 @import url('./pages/_index.css');

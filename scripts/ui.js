@@ -38,7 +38,7 @@ function switchTab(tab) {
         (requests || []).forEach(req => {
           const pp = safePP(req.sender_pp);
           const div = document.createElement("div");
-          div.classList.add("contact-item");
+          div.classList.add("pending-item");
           div.innerHTML = `
             <div class="pp" style="background-image:url('${pp}'); background-size:cover; background-position:center;"></div>
             <span>${req.sender_username}</span>
