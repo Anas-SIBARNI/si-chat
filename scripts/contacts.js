@@ -248,9 +248,36 @@
     }
   }
 
-  /* ---------------------------------
-     Exports globaux
-  ---------------------------------- */
-  window.loadContacts = loadContacts;
-  window.__markActiveContact = markActive;
+
+
+function repondreDemande(id, reponse) {
+  fetch(`${API}/friend-request/respond`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include', // si tu utilises des cookies/sessions
+    body: JSON.stringify({ requestId: Number(id), response: reponse })
+  })
+  .then(res => {
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return res.json();
+  })
+  .then(() => {
+    // petit feedback + refresh de l’onglet “En attente”
+    alert(`Demande ${reponse === 'accepte' ? 'acceptée' : 'refusée'}`);
+    if (typeof switchTab === 'function') switchTab('pending');
+  })
+  .catch(err => {
+    console.error('Erreur repondreDemande:', err);
+    alert("Impossible d'envoyer la réponse pour l'instant. Réessaie.");
+  });
+}
+
+/* ---------------------------------
+   Exports globaux (garde-les)
+---------------------------------- */
+window.loadContacts = loadContacts;
+window.__markActiveContact = markActive;
+window.repondreDemande = repondreDemande;
+
+
 })();
