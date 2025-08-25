@@ -1,7 +1,7 @@
 /* ============================================================================
    contacts.js — liste des amis (colonne Discussions)
    Rôle:
-     - Récupère /friends/:userId
+     - Récupère /contacts/:userId
      - Rend dans #discussions-list (avec fallbacks)
      - Ouvre une DM au clic (via callback onOpen)
      - autoOpenFirst: ouvre la 1ʳᵉ DM (onglet Messages)
@@ -94,28 +94,28 @@
     list.innerHTML = "";
 
     try {
-      const res = await fetch(`${CONTACTS_API}/friends/${uid}`);
+      const res = await fetch(`${CONTACTS_API}/contacts/${uid}`);
       if (!res.ok) throw new Error("HTTP " + res.status);
 
-      const friends = await res.json();
+      const contacts = await res.json();
 
-      if (!Array.isArray(friends) || friends.length === 0) {
+      if (!Array.isArray(contacts) || contacts.length === 0) {
         list.innerHTML = `<div class="empty muted">Aucun contact</div>`;
         return;
       }
 
       // (option) trier par dernier message si dispo (à activer quand champ présent)
-      // friends.sort((a,b) => new Date(b.last_message_at) - new Date(a.last_message_at));
+      // contacts.sort((a,b) => new Date(b.last_message_at) - new Date(a.last_message_at));
 
-      friends.forEach(f => list.appendChild(row(f, onOpen)));
+      contacts.forEach(f => list.appendChild(row(f, onOpen)));
 
       if (autoOpenFirst) {
-        const first = friends[0];
+        const first = contacts[0];
         markActive(first.id);
         if (typeof onOpen === "function") onOpen(first);/* ============================================================================
         contacts.js — liste des amis (colonne Discussions)
         Rôle:
-          - Récupère /friends/:userId
+          - Récupère /contacts/:userId
           - Rend dans #discussions-list (avec fallbacks)
           - Ouvre une DM au clic (via callback onOpen)
           - autoOpenFirst: ouvre la 1ʳᵉ DM (onglet Messages)
@@ -208,23 +208,23 @@
          list.innerHTML = "";
      
          try {
-           const res = await fetch(`${CONTACTS_API}/friends/${uid}`);
+           const res = await fetch(`${CONTACTS_API}/contacts/${uid}`);
            if (!res.ok) throw new Error("HTTP " + res.status);
      
-           const friends = await res.json();
+           const contacts = await res.json();
      
-           if (!Array.isArray(friends) || friends.length === 0) {
+           if (!Array.isArray(contacts) || contacts.length === 0) {
              list.innerHTML = `<div class="empty muted">Aucun contact</div>`;
              return;
            }
      
            // (option) trier par dernier message si dispo (à activer quand champ présent)
-           // friends.sort((a,b) => new Date(b.last_message_at) - new Date(a.last_message_at));
+           // contacts.sort((a,b) => new Date(b.last_message_at) - new Date(a.last_message_at));
      
-           friends.forEach(f => list.appendChild(row(f, onOpen)));
+           contacts.forEach(f => list.appendChild(row(f, onOpen)));
      
            if (autoOpenFirst) {
-             const first = friends[0];
+             const first = contacts[0];
              markActive(first.id);
              if (typeof onOpen === "function") onOpen(first);
            }
@@ -251,7 +251,7 @@
 
 
 function repondreDemande(id, reponse) {
-  fetch(`${API}/friend-request/respond`, {
+  fetch(`${API}/contact-request/respond`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     credentials: 'include', // si tu utilises des cookies/sessions

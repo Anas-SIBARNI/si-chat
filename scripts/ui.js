@@ -31,7 +31,7 @@ function switchTab(tab) {
 
   if (tab === "pending") {
     // Demandes en attente
-    fetch(`${UI_API}/friend-requests/${uid}`)
+    fetch(`${UI_API}/contact-requests/${uid}`)
       .then(res => res.json())
       .then(requests => {
         content.innerHTML = "";
@@ -69,15 +69,15 @@ function switchTab(tab) {
 
   } else if (tab === "online") {
     // Amis en ligne
-    fetch(`${UI_API}/friends-online/${uid}`)
+    fetch(`${UI_API}/contacts-online/${uid}`)
       .then(res => res.json())
-      .then(friends => {
-        const html = (friends || []).map(f => `
+      .then(contacts => {
+        const html = (contacts || []).map(f => `
           <li>
             <div class="pp" style="background-image:url('${safePP(f.pp)}'); background-size:cover; background-position:center;"></div>
             ${f.username}
           </li>`).join("");
-        content.innerHTML = `<ul>${html}</ul>`;
+        content.innerHTML = `<ul class="contacts-list">${html}</ul>`;
       })
       .catch(err => {
         console.error("[ui] online:", err);
@@ -99,18 +99,18 @@ function switchTab(tab) {
 
   } else {
     // Par défaut: liste des amis
-    fetch(`${UI_API}/friends/${uid}`)
+    fetch(`${UI_API}/contacts/${uid}`)
       .then(res => res.json())
-      .then(friends => {
-        const html = (friends || []).map(f => `
+      .then(contacts => {
+        const html = (contacts || []).map(f => `
           <li>
             <div class="pp" style="background-image:url('${safePP(f.pp)}'); background-size:cover; background-position:center;"></div>
             ${f.username}
           </li>`).join("");
-        content.innerHTML = `<ul>${html}</ul>`;
+        content.innerHTML = `<ul class="contacts-list">${html}</ul>`;
       })
       .catch(err => {
-        console.error("[ui] friends:", err);
+        console.error("[ui] contacts:", err);
         content.textContent = "Erreur de chargement.";
       });
   }

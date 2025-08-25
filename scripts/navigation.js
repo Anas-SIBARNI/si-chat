@@ -9,7 +9,7 @@ const $d = (id) => document.getElementById(id);
 
 /* Met l’onglet actif (li + a) dans la sidebar */
 function setSidebarActive(id) {
-  const ids = ["nav-discussions", "nav-groups", "nav-friends"];
+  const ids = ["nav-discussions", "nav-groups", "nav-contacts"];
   ids.forEach(x => {
     const li = $d(x);
     const a  = li?.querySelector("a");
@@ -183,9 +183,9 @@ function bindNavigation() {
   });
 
   // Contacts
-  $d('nav-friends')?.addEventListener('click', (e) => {
+  $d('nav-contacts')?.addEventListener('click', (e) => {
     e.preventDefault();
-    setSidebarActive('nav-friends');
+    setSidebarActive('nav-contacts');
     setActiveNav(el?.btnContacts?.());
 
     showSection('contacts-section');          // <-- affiche Contacts, masque Discussions + Chat

@@ -58,14 +58,14 @@ function showNewGroupForm() {
   `;
 
   // Charger mes contacts
-  fetch(`${API}/friends/${userId}`)
+  fetch(`${API}/contacts/${userId}`)
     .then(res => res.json())
-    .then(friends => {
+    .then(contacts => {
       const listDiv = document.getElementById("group-contact-selection");
       if (!listDiv) return;
       listDiv.innerHTML = "";
 
-      friends.forEach(f => {
+      contacts.forEach(f => {
         const label = document.createElement("label");
         label.style.display = "flex";
         label.style.alignItems = "center";

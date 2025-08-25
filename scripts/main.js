@@ -31,7 +31,7 @@ const el = {
 
   btnGroups:         () => document.getElementById("btn-groups")    || document.querySelector('[data-nav="groups"]')   || document.querySelector(".nav-groups"),
   btnContacts: () =>
-    document.getElementById("nav-friends") ||
+    document.getElementById("nav-contacts") ||
     document.getElementById("btn-contacts")   ||
     document.querySelector('[data-nav="contacts"]') ||
     document.querySelector(".nav-contacts"),
