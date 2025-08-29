@@ -163,3 +163,4 @@
 
 .sidebar__user:hover .pp { border-color: #3b82f6; }
 .sidebar__user:hover span { color: #ffffff; }
+.sidebar nav ul li a[href="parametres.html"]:visited { color: inherit; }

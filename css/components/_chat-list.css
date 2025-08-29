@@ -25,8 +25,8 @@
   margin: 2px 4px;
 
   border-radius: var(--radius-lg, 12px);
-  background: var(--card-bg, rgba(255,255,255,.03));
-  border: 1px solid var(--card-border, rgba(255,255,255,.08));
+  background: var(--block-bg, rgba(255,255,255,.03));
+  border: 1px solid var(--block-border, rgba(255,255,255,.08));
 
   cursor: pointer;
   transition:
@@ -43,8 +43,8 @@
 .contact-item:hover,
 .contacts .contact:hover,
 .contact-list > li:hover {
-  background: var(--card-bg-hover, rgba(255,255,255,.06));
-  border-color: var(--card-border-hover, rgba(255,255,255,.16));
+  background: var(--block-bg-hover, rgba(255,255,255,.06));
+  border-color: var(--block-border-hover, rgba(255,255,255,.16));
   box-shadow: var(--shadow-md, 0 6px 12px rgba(0,0,0,.22), 0 4px 6px rgba(0,0,0,.18));
   transform: translateY(-1px);
 }
@@ -54,7 +54,7 @@
 .contacts .contact:focus-visible,
 .contact-list > li:focus-visible {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand, #1d4ed8) 28%, transparent);
-  border-color: color-mix(in srgb, var(--brand, #1d4ed8) 45%, var(--card-border, rgba(255,255,255,.08)));
+  border-color: color-mix(in srgb, var(--brand, #1d4ed8) 45%, var(--block-border, rgba(255,255,255,.08)));
 }
 
 /* Actif / sélectionné : fond bleu “plein” comme avant */

@@ -13,12 +13,12 @@
      font-family: system-ui, -apple-system, Segoe UI, Roboto, Poppins, Arial, sans-serif;
    }
    
-   /* Cartes (login: .auth-card, register: .auth-container) */
-   .auth-card,
+   /* Cartes (login: .auth-block, register: .auth-container) */
+   .auth-block,
    .auth-container {
      width: min(480px, 92vw);
      background: var(--panel-2, #111827);
-     border: 1px solid var(--card-border, rgba(255,255,255,.1));
+     border: 1px solid var(--block-border, rgba(255,255,255,.1));
      border-radius: var(--radius-lg, 12px);
      padding: 24px 20px 18px;
      box-shadow: var(--shadow-md, 0 10px 30px rgba(0,0,0,.35));
@@ -26,7 +26,7 @@
      box-sizing: border-box;
    }
    
-   .auth-card h2,
+   .auth-block h2,
    .auth-container h2 {
      margin: 0 0 6px 0;
      font-weight: 800;
@@ -41,7 +41,7 @@
    .dot { width: 10px; height: 10px; border-radius: 999px; background: var(--brand, #2563eb); box-shadow: 0 0 16px #2563ebaa; }
    
    /* ===== Formulaires ===== */
-   .auth-card form,
+   .auth-block form,
    .auth-container form { display: grid; gap: 12px; margin-top: 12px; }
    .field { margin: 8px 0; }
    
@@ -117,6 +117,6 @@
    
    /* Responsive léger */
    @media (max-width: 420px){
-     .auth-card, .auth-container { padding: 18px 14px 16px; }
+     .auth-block, .auth-container { padding: 18px 14px 16px; }
    }
    

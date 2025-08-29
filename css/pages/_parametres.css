@@ -42,7 +42,7 @@
   }
   
   .settings-container .settings-sidebar li:hover {
-    background: var(--card-bg-hover, rgba(255,255,255,.06));
+    background: var(--block-bg-hover, rgba(255,255,255,.06));
     border-left-color: var(--brand, #1d4ed8);
   }
   
@@ -72,7 +72,7 @@
     padding: 2rem;
     border-radius: var(--radius-lg, 12px);
     background: var(--panel, rgba(30,41,59,.75));
-    border: 1px solid var(--card-border, rgba(255,255,255,.1));
+    border: 1px solid var(--block-border, rgba(255,255,255,.1));
     box-shadow: var(--shadow-md, 0 6px 12px rgba(0,0,0,.22), 0 4px 6px rgba(0,0,0,.18));
     backdrop-filter: blur(6px);
   }
@@ -110,7 +110,7 @@
     justify-content: space-between;
     gap: .75rem;
     padding: .75rem 0;
-    border-bottom: 1px solid var(--card-border, rgba(255,255,255,.1));
+    border-bottom: 1px solid var(--block-border, rgba(255,255,255,.1));
   }
   
   .settings-container .settings-row strong {

@@ -8,7 +8,6 @@
 
 /* Objects */
 @import url('./objects/_layout.css');
-@import url('./objects/_media.css');
 
 /* Elements */
 @import url('./elements/_typography.css');
@@ -46,3 +45,7 @@
 @import url('./utilities/_text.css');
 @import url('./utilities/_spacing.css');
 @import url('./utilities/_shadow.css');
+
+
+/* media */
+@import url('./objects/_media.css');

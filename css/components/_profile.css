@@ -7,7 +7,7 @@
   }
   
   /* Carte collante */
-  #profile-card{
+  #profile-block{
     position: sticky;
     top: var(--space-sm, 12px);
     display: grid;
@@ -19,7 +19,7 @@
       color-mix(in srgb, #fff 4%, transparent),
       color-mix(in srgb, #fff 2%, transparent)
     );
-    border: 1px solid var(--card-border, rgba(255,255,255,.06));
+    border: 1px solid var(--block-border, rgba(255,255,255,.06));
     box-shadow: var(--shadow-md, 0 8px 24px rgba(0,0,0,.25));
   }
   
@@ -38,8 +38,8 @@
     margin: 6px 0 0 0;
     color: var(--text-muted, #cbd5e1);
     line-height: 1.45;
-    background: var(--card-bg, rgba(255,255,255,.03));
-    border: 1px solid var(--card-border, rgba(255,255,255,.06));
+    background: var(--block-bg, rgba(255,255,255,.03));
+    border: 1px solid var(--block-border, rgba(255,255,255,.06));
     padding: 10px 12px;
     border-radius: var(--radius-md, 10px);
     white-space: pre-wrap;
@@ -48,7 +48,7 @@
   /* Séparateur */
   .profile-sep{
     height: 1px;
-    background: var(--card-border, rgba(255,255,255,.06));
+    background: var(--block-border, rgba(255,255,255,.06));
     margin: var(--space-md, 12px) 0;
   }
   

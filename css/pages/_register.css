@@ -8,11 +8,11 @@ body {
     font-family: system-ui, -apple-system, Segoe UI, Roboto, Poppins, Arial, sans-serif;
   }
   
-  /* Carte d’inscription (même esprit que .auth-card du login) */
+  /* Carte d’inscription (même esprit que .auth-block du login) */
   .auth-container{
     width: min(480px, 92vw);
     background: var(--panel-2, #111827);
-    border: 1px solid var(--card-border, rgba(255,255,255,.1));
+    border: 1px solid var(--block-border, rgba(255,255,255,.1));
     border-radius: var(--radius-lg, 12px);
     padding: 24px 20px 18px;
     box-shadow: var(--shadow-md, 0 10px 30px rgba(0,0,0,.35));

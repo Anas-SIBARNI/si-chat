@@ -4,12 +4,12 @@ body{
   margin:0; background:#18181B; color:#fff; font-family: system-ui, -apple-system, Segoe UI, Roboto, Poppins, Arial, sans-serif;
   min-height:100dvh; display:grid; place-items:center;
 }
-.auth-card{
+.auth-block{
   width:min(420px, 92vw);
   background:#27272a; border:1px solid #3a3a40; border-radius:14px; padding:24px 20px 18px;
   box-shadow: 0 10px 30px rgba(0,0,0,.35);
 }
-.auth-card h2{ margin:0 0 6px; font-weight:700; }
+.auth-block h2{ margin:0 0 6px; font-weight:700; }
 .muted{ color:#c9c9c9; font-size:.92rem; margin:0 0 18px; }
 .field{ margin:12px 0; }
 .label-row{ display:flex; justify-content:space-between; align-items:center; }

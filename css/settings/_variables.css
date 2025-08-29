@@ -42,10 +42,10 @@
   --bubble-outgoing: var(--brand); /* messages envoyés */
 
   /* Cartes & composants */
-  --card-bg: rgba(255,255,255,.03);
-  --card-bg-hover: rgba(255,255,255,.06);
-  --card-border: rgba(255,255,255,.08);
-  --card-border-hover: rgba(255,255,255,.16);
+  --block-bg: rgba(255,255,255,.03);
+  --block-bg-hover: rgba(255,255,255,.06);
+  --block-border: rgba(255,255,255,.08);
+  --block-border-hover: rgba(255,255,255,.16);
 
   /* Rayons */
   --radius-md: 8px;
@@ -70,7 +70,7 @@
   --pp-status: 10px;
 
   --pp-bg: #475569;
-  --pp-bg-card: #2e2e35;
+  --pp-bg-block: #2e2e35;
 
   /*media*/
   --bp-lg: 1180px;

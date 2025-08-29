@@ -4,11 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Messagerie</title>
-  <link rel="icon" href="/path/to/your/favicon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="css/main.css">
+  <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="css/main.css?v=mobile-4">
+
 </head>
+
 <body>
   <div class="app-container">
+
 <!-- Sidebar -->
 <aside class="sidebar">
   <div class="sidebar__logo">
@@ -23,22 +26,12 @@
     </ul>
   </nav>
   
-  
-  
-
   <a href="parametres.html" class="sidebar__user">
     <div id="sidebar-pp" class="pp" style="background-image:url('img/default.jpg')"></div>
     <span id="username">Username</span>
   </a>  
 </aside>
 
-
-
-
-
-    <style>
-      .sidebar nav ul li a[href="parametres.html"]:visited { color: inherit; }
-    </style>
     
     <!-- Discussions privées -->
     <section class="contacts" id="discussions-section">
@@ -86,22 +79,16 @@
           <!-- Contenu injecté par switchTab(tab) -->
         </div>
       </section>
-
-
-      
     </main>
 
-    
       <!-- Panneau fiche profil (droite) -->
-      <aside id="profile-panel" class="profile-panel" aria-label="Fiche profil de l'interlocuteur">
-        <div id="profile-card">
+      <aside id="profile-panel" class="profile profile-panel" aria-label="Fiche profil de l'interlocuteur">
+        <div id="profile-block">
           <div class="pp" id="profile-pp" style="width:72px;height:72px;border-radius:50%;background:#ddd;background-size:cover;background-position:center;"></div>
           <h3 id="profile-name" style="margin:12px 0 4px 0;">@username</h3>
           <p id="profile-description" style="margin:0;color:#555;">Aucune description</p>
         </div>
       </aside>
-
-
   </div>
 
   <script>
@@ -111,18 +98,16 @@
   
   <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" crossorigin="anonymous"></script>
 
-
   <script src="scripts/socket.js"></script>
   <script src="scripts/discussions.js"></script>
   <script src="scripts/contacts.js"></script>
   <script src="scripts/groups.js"></script>
   <script src="scripts/navigation.js"></script>
-  <script src="scripts/ui.js?v=2"></script>
+  <script src="scripts/ui.js"></script>
+  <script src="scripts/mobile.js"></script>
+
   
   <script src="scripts/main.js"></script>
-  
-  
-
 
 </body>
 </html>

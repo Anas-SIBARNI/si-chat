@@ -36,7 +36,7 @@
 .contacts .contact .pp,
 .contact-list > li .pp{
   --pp-size: var(--pp-md, 40px);
-  background: var(--pp-bg-card, #2e2e35) center/cover no-repeat;
+  background: var(--pp-bg-block, #2e2e35) center/cover no-repeat;
 }
 
 /* Header chat */
