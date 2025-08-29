@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Messagerie</title>
+  <link rel="icon" href="/path/to/your/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
@@ -26,9 +27,9 @@
   
 
   <a href="parametres.html" class="sidebar__user">
-    <div class="pp" style="background-image:url('img/default.jpg')"></div>
+    <div id="sidebar-pp" class="pp" style="background-image:url('img/default.jpg')"></div>
     <span id="username">Username</span>
-  </a>
+  </a>  
 </aside>
 
 
@@ -108,7 +109,8 @@
     window.API = window.API_BASE; // compat pour du code qui utilise "API"
   </script>
   
-  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" crossorigin="anonymous"></script>
+
 
   <script src="scripts/socket.js"></script>
   <script src="scripts/discussions.js"></script>

@@ -153,6 +153,53 @@ function hideContactSection() {
   document.querySelector(".chat-footer")?.classList.remove("hidden");
 }
 
+/* ---------- Refresh de la carte utilisateur (pp + username) ---------- */
+
+function resolvePPLocal(pp) {
+  if (!pp || !pp.trim()) return "img/default.jpg";
+  return (pp.startsWith("http") || pp.startsWith("/")) ? pp : `/uploads/pp/${pp}`;
+}
+
+function applyUserToSidebar(u = {}) {
+  const nameEl = document.getElementById("username");
+  const ppEl   = document.getElementById("sidebar-pp") || document.querySelector(".sidebar__user .pp");
+
+  const uname = u.username || localStorage.getItem("username") || "Moi";
+  const ppu   = (typeof window.resolvePP === "function")
+    ? window.resolvePP(u.pp || localStorage.getItem("pp"))
+    : resolvePPLocal(u.pp || localStorage.getItem("pp"));
+
+  if (nameEl) nameEl.textContent = uname;
+  if (ppEl)   ppEl.style.backgroundImage = `url('${ppu}')`;
+
+  // mets à jour le cache si on a reçu des données fraîches
+  if (u.username) localStorage.setItem("username", u.username);
+  if (u.pp)       localStorage.setItem("pp", u.pp);
+}
+
+function refreshCurrentUserBlock() {
+  const uid = Number.parseInt(localStorage.getItem("userId") || "0", 10);
+  if (!uid) { applyUserToSidebar(); return; }
+
+  fetch(`${UI_API}/user/${uid}`, { credentials: "include" })
+    .then(r => r.ok ? r.json() : Promise.reject(r.status))
+    .then(applyUserToSidebar)
+    .catch(() => {
+      // en cas d’erreur API, on reste sur le cache
+      applyUserToSidebar();
+    });
+}
+
+// Affiche le cache immédiatement, puis tente un refresh API
+document.addEventListener("DOMContentLoaded", () => {
+  applyUserToSidebar();     // cache immédiat
+  refreshCurrentUserBlock(); // refresh depuis /user/:id
+});
+
+// Optionnel: export si tu veux l’appeler ailleurs après une MAJ de profil
+window.refreshCurrentUserBlock = refreshCurrentUserBlock;
+
+
 /* ---------------------------------
    Exports globaux (appel depuis HTML)
 ---------------------------------- */
