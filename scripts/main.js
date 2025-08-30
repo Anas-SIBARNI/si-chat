@@ -144,6 +144,9 @@ function bindSendForm() {
         });
         // émettre via socket global si dispo
         window.socket?.emit?.("privateMessage", { senderId: userId, receiverId: activeContactId, content });
+        if (typeof window.updateConversationSnippet === "function") {
+          window.updateConversationSnippet(activeContactId, content, new Date().toISOString());
+        }
 
       } else if (activeGroupId) {
         window.socket?.emit?.("groupMessage", { senderId: userId, groupId: activeGroupId, content });
@@ -165,8 +168,14 @@ async function boot() {
   setHeaderTitle("Discussion privée la plus récente");
 
   try {
-    window.loadContacts?.(true, ({ id, username }) => window.loadPrivateDiscussion?.(id, username));
-  } catch(e){ console.error("loadContacts/loadPrivateDiscussion", e); }
+    // 1) Rendre la liste & ouvrir la plus récente
+    await window.loadContacts?.(
+      true,
+      ({ id, username }) => window.loadPrivateDiscussion?.(id, username)
+    );
+    // 2) Poser les compteurs non-lus une fois le DOM prêt
+    window.loadUnread?.();
+  } catch(e){ console.error("loadContacts/loadUnread", e); }
 }
 
 if (document.readyState === "loading") {
@@ -174,6 +183,61 @@ if (document.readyState === "loading") {
 } else {
   boot();
 }
+
+/* ------------------------------
+   Non-lus & présence (déjà utilisés ailleurs)
+------------------------------ */
+async function loadUnread(){
+  const rows = await fetch(`${API}/contacts/${userId}/unread-counts`).then(r=>r.json());
+  rows.forEach(r=> setUnread(r.contact_id, r.unread_count));
+}
+function setUnread(id,n){
+  const el=document.getElementById(`unread-${id}`);
+  if(!el) return;
+  if(n>0){ el.classList.remove('hidden'); el.textContent=n; }
+  else { el.classList.add('hidden'); el.textContent=0; }
+}
+function setPresenceDot(id,online){
+  const d=document.getElementById(`presence-${id}`);
+  if(!d) return;
+  d.classList.toggle('online',online);
+  d.classList.toggle('offline',!online);
+  const item = d.closest('.contact-item');
+  const prev = item && item.querySelector('.preview');
+  if (prev) prev.textContent = online ? 'En ligne' : 'Hors ligne';
+}
+
+function updateConversationSnippet(contactId, content, sentAt = new Date().toISOString()) {
+  const list = el.discussionsList?.();
+  if (!list) return;
+
+  // 1) trouver la ligne
+  const node = list.querySelector(`.contact-item[data-contact-id="${contactId}"]`);
+  if (!node) return;
+
+  const timeEl    = node.querySelector(".time");
+  if (timeEl) timeEl.textContent = (window.formatChatTime?.(sentAt) || "");
+
+  // 3) remonter en tête de liste si pas déjà premier
+  if (list.firstElementChild !== node) {
+    list.insertBefore(node, list.firstElementChild);
+  }
+}
+
+function formatChatTime(ts) {
+  if (!ts) return "";
+  const d = new Date(ts);
+  if (Number.isNaN(d.getTime())) return "";
+  const now = new Date();
+  const sameDay =
+    d.getFullYear() === now.getFullYear() &&
+    d.getMonth() === now.getMonth() &&
+    d.getDate() === now.getDate();
+  return sameDay
+    ? d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    : d.toLocaleDateString([], { day: "2-digit", month: "2-digit" }); // JJ/MM
+}
+
 
 /* ------------------------------
    Exposition minimale (partagés)
@@ -189,3 +253,6 @@ window.userCache      = userCache;
 window.API            = API;
 window.userId         = userId;
 window.username       = username;
+window.loadUnread     = loadUnread;
+window.updateConversationSnippet = updateConversationSnippet;
+window.formatChatTime = formatChatTime;

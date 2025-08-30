@@ -59,7 +59,6 @@ async function loadPrivateDiscussion(contactId, contactName) {
   const body = el.chatBody();
   if (body) body.innerHTML = "";
 
-  // Token anti course (si on change vite de contact)
   const openedId = activeContactId;
 
   /* ----- Panneau profil (droite) ----- */
@@ -70,14 +69,12 @@ async function loadPrivateDiscussion(contactId, contactName) {
       const descEl = document.getElementById("profile-description");
       const ppDiv  = document.getElementById("profile-pp");
 
-      // État “chargement”
       if (nameEl) nameEl.textContent = contactName || "";
       if (descEl) descEl.textContent = "Chargement…";
       if (ppDiv)  ppDiv.style.backgroundImage = "none";
 
       const p = await getUserProfileSafe(activeContactId);
-
-      if (openedId !== activeContactId) return; // abandon si l’utilisateur a changé de DM
+      if (openedId !== activeContactId) return;
 
       if (p) {
         if (nameEl) nameEl.textContent = p.username || "";
@@ -99,29 +96,35 @@ async function loadPrivateDiscussion(contactId, contactName) {
 
     const list = await res.json();
 
-    // Préfetch profils présents dans l’historique
     const ids = new Set(list.map(m => m.sender_id).filter(Boolean));
     await Promise.all([...ids].map(getUserProfileSafe));
 
     if (openedId !== activeContactId) return;
 
-    // Rendu des messages
     list.forEach(m => displayMessage({
       senderId:        m.sender_id,
       content:         m.content,
-      sender_pp:       m.sender_pp,       // si fourni par le backend
-      sender_username: m.sender_username  // idem
+      sender_pp:       m.sender_pp,
+      sender_username: m.sender_username
     }));
 
-    // Scroll bas (sans animation pour l’historique)
     scrollChatToBottom({ smooth: false });
-
-    // Activer l’envoi (remplace proprement l’ancien handler)
     bindSendForm();
+
+    // 👉 Marquer comme "vu" et remettre compteur à 0
+    fetch(`${API}/dm/${activeContactId}/seen`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId })
+    }).then(() => {
+      if (typeof setUnread === "function") setUnread(activeContactId, 0);
+    }).catch(e => console.warn("[dm seen]", e));
+
   } catch (err) {
     console.error("[discussions] historique:", err);
   }
 }
+
 
 /* ---------------------------------
    Sélection d’un contact (événement)

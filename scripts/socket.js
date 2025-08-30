@@ -1,7 +1,8 @@
 /* ============================================================================
    socket.js — connexion Socket.IO robuste + listeners sur bonne instance
    Dépend de globals: DEFAULT_PP, userId, window.activeContactId, window.activeGroupId,
-   userCache, displayMessage, getUserProfileSafe (exposé par discussions.js)
+   userCache, displayMessage, getUserProfileSafe (exposé par discussions.js),
+   setUnread, setPresenceDot, updateConversationSnippet (main.js)
 ============================================================================ */
 
 (() => {
@@ -53,14 +54,12 @@
 
   function bindSocketEvents() {
     if (!socket) return;
-
-    // évite de rebinder sur la même instance
     if (lastBound === socket) return;
     lastBound = socket;
 
-    // par sécurité, on nettoie les éventuels vieux handlers
     socket.removeAllListeners?.("privateMessage");
     socket.removeAllListeners?.("groupMessage");
+    socket.removeAllListeners?.("presence:update");
 
     // --- Message privé ---
     socket.on("privateMessage", async (data) => {
@@ -69,17 +68,53 @@
       const myId       = N(userId);
       const activeId   = N(window.activeContactId);
 
-      // ne me concerne pas → ignore
+      // ne me concerne pas
       if (!(senderId === myId || receiverId === myId)) return;
-      // pas la discussion ouverte → ignore
-      if (!(senderId === activeId || receiverId === activeId)) return;
 
-      // profil sender (cache + lazy fetch si dispo)
+      // contact "cible" dont la ligne doit bouger (si c'est moi l'émetteur → autre = receiverId)
+      const otherId = (senderId === myId) ? receiverId : senderId;
+
+      // DM non ouverte → incrément badge + mettre à jour l'aperçu/heure + remonter en tête
+      if (senderId !== myId && senderId !== activeId) {
+        const badge = document.getElementById(`unread-${otherId}`);
+        const cur = badge && !badge.classList.contains("hidden")
+          ? parseInt(badge.textContent, 10) : 0;
+        if (typeof setUnread === "function") setUnread(otherId, cur + 1);
+
+        if (typeof window.updateConversationSnippet === "function") {
+          window.updateConversationSnippet(otherId, data?.content, new Date().toISOString());
+        }
+        return;
+      }
+
+      // DM ouverte → afficher le message, puis mettre à jour la ligne (aperçu/heure + remontée)
       let profile = userCache.get(senderId);
       if (!profile && typeof window.getUserProfileSafe === "function") {
         profile = await window.getUserProfileSafe(senderId);
       }
+      displayMessage({
+        senderId,
+        content: data?.content,
+        sender_pp: profile?.pp || DEFAULT_PP,
+        sender_username: profile?.username || "Utilisateur",
+      });
 
+      if (typeof window.updateConversationSnippet === "function") {
+        window.updateConversationSnippet(otherId, data?.content, new Date().toISOString());
+      }
+    });
+
+    // --- Message groupe ---
+    socket.on("groupMessage", async (data) => {
+      const groupId   = N(data?.groupId);
+      const senderId  = N(data?.senderId);
+      const activeGid = N(window.activeGroupId);
+      if (groupId !== activeGid) return;
+
+      let profile = userCache.get(senderId);
+      if (!profile && typeof window.getUserProfileSafe === "function") {
+        profile = await window.getUserProfileSafe(senderId);
+      }
       displayMessage({
         senderId,
         content: data?.content,
@@ -88,25 +123,11 @@
       });
     });
 
-    // --- Message groupe ---
-    socket.on("groupMessage", async (data) => {
-      const groupId   = N(data?.groupId);
-      const senderId  = N(data?.senderId);
-      const activeGid = N(window.activeGroupId);
-
-      if (groupId !== activeGid) return;
-
-      let profile = userCache.get(senderId);
-      if (!profile && typeof window.getUserProfileSafe === "function") {
-        profile = await window.getUserProfileSafe(senderId);
+    // --- Présence temps réel ---
+    socket.on("presence:update", ({ userId, en_ligne }) => {
+      if (typeof setPresenceDot === "function") {
+        setPresenceDot(userId, !!en_ligne);
       }
-
-      displayMessage({
-        senderId,
-        content: data?.content,
-        sender_pp: profile?.pp || DEFAULT_PP,
-        sender_username: profile?.username || "Utilisateur",
-      });
     });
   }
 

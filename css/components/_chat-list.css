@@ -18,9 +18,13 @@
 .contact-item,
 .contacts .contact,
 .contact-list > li {
-  display: flex;
+  /* passage en grille pour alignement propre pp / texte / actions */
+  display: grid;
+  grid-template-columns: 46px 1fr auto;
+  grid-auto-rows: minmax(46px, auto);
   align-items: center;
-  gap: var(--space-2, 12px);
+  column-gap: var(--space-2, 12px);
+
   padding: var(--space-2, 10px) var(--space-3, 12px);
   margin: 2px 4px;
 
@@ -36,10 +40,8 @@
     box-shadow .2s ease;
   box-sizing: border-box;
   min-width: 0;
-  outline: none; /* évite le liseré bleu natif */
+  outline: none;
 }
-
-/* Hover : léger lift + verre teinté */
 .contact-item:hover,
 .contacts .contact:hover,
 .contact-list > li:hover {
@@ -48,28 +50,29 @@
   box-shadow: var(--shadow-md, 0 6px 12px rgba(0,0,0,.22), 0 4px 6px rgba(0,0,0,.18));
   transform: translateY(-1px);
 }
-
-/* Focus clavier : anneau doux, pas de bleu dur navigateur */
 .contact-item:focus-visible,
 .contacts .contact:focus-visible,
 .contact-list > li:focus-visible {
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand, #1d4ed8) 28%, transparent);
   border-color: color-mix(in srgb, var(--brand, #1d4ed8) 45%, var(--block-border, rgba(255,255,255,.08)));
 }
-
-/* Actif / sélectionné : fond bleu “plein” comme avant */
 .contact-item.active,
 .contacts .contact.active,
 .contact-list > li.active {
   background: linear-gradient(135deg, var(--brand-dark, #1e3a8a), var(--brand, #1d4ed8));
   border-color: color-mix(in srgb, var(--brand, #1d4ed8) 55%, transparent);
   box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--brand, #1d4ed8) 25%, transparent);
-  transform: translateY(0); /* pas de lift en état actif */
+  transform: translateY(0);
+}
+
+/* ===== PP ===== */
+.pp{
+  width:44px;height:44px;border-radius:50%;
+  background-size:cover;background-position:center;
 }
 
 /* ===== Contenu ===== */
-.meta { min-width: 0; flex: 1; }
-
+.meta { min-width: 0; } /* important pour ellipsis */
 .name {
   font-weight: 700;
   color: var(--text-primary, #e5e7eb);
@@ -77,14 +80,15 @@
   overflow: hidden;
   text-overflow: ellipsis;
   line-height: 1.2;
+  display:flex;align-items:center;gap:6px
 }
-
 .preview {
   font-size: .82rem;
   color: var(--text-muted, #9ca3af);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 48vw; /* évite de pousser la colonne de droite */
 }
 
 /* Droite (heure + badge) */
@@ -94,13 +98,13 @@
   align-items: flex-end;
   gap: var(--space-1, .35rem);
   margin-left: var(--space-1, .35rem);
-  flex-shrink: 0;
+  min-width: 52px; /* un peu plus pour 2 chiffres */
 }
-
 .time { font-size: .73rem; color: var(--text-subtle, #6b7280); }
 
+/* Badge non lus */
 .badge {
-  background: var(--success, #10b981);
+  background: var(--brand, #3b82f6);
   color: #fff;
   font-size: .7rem;
   font-weight: 700;
@@ -110,8 +114,19 @@
   min-width: 20px;
   text-align: center;
 }
+.badge.hidden { display: none; }
 
-/* ===== Boutons contextuels ===== */
+/* ===== Dot présence ===== */
+.presence-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.15);
+  box-shadow: 0 0 0 2px rgba(0,0,0,.25); /* lisibilité sur pp claire */
+  flex-shrink: 0;
+}
+.presence-dot.online  { background: #22c55e; } /* vert */
+.presence-dot.offline { background: #6b7280; } /* gris */
+
+/* ===== Boutons contextuels (vues héritées) ===== */
 .contact-list button,
 [id="contact-list"] button {
   all: unset;
@@ -134,7 +149,6 @@
   margin-bottom: 1rem;
   border: 1px solid rgba(255,255,255,.08);
 }
-
 .contacts .search-result ul,
 .contacts .private-chat ul {
   list-style: none;
@@ -145,4 +159,31 @@
 .contacts .private-chat li {
   padding: .5rem 0;
   border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+/* === SKELETONS (chargement) === */
+.contact-item.skeleton {
+  grid-template-columns: 46px 1fr auto;
+  pointer-events: none; opacity: .9;
+}
+.skel {
+  background: linear-gradient(90deg, rgba(255,255,255,.06), rgba(255,255,255,.12), rgba(255,255,255,.06));
+  background-size: 200% 100%; animation: sk-shimmer 1.1s linear infinite;
+  border-radius: 8px;
+}
+.skel.pp   { width:44px; height:44px; border-radius:50%; }
+.skel.name { height:14px; width:40%; margin-bottom:8px; }
+.skel.prev { height:10px; width:70%; }
+.skel.time { height:10px; width:38px; margin-left:auto; border-radius: 6px; }
+
+@keyframes sk-shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* === Etat vide === */
+.list-empty {
+  margin: 10px 6px; padding: 14px;
+  border-radius: 12px;
+  background: rgba(255,255,255,.03);
+  border: 1px dashed rgba(255,255,255,.15);
+  color: var(--text-muted, #9ca3af);
+  font-size: .9rem;
 }
