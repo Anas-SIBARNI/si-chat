@@ -266,3 +266,67 @@ window.updateConversationSnippet = updateConversationSnippet;
 window.formatChatTime = formatChatTime;
 window.loadGroupUnread = loadGroupUnread;
 window.setGroupUnread  = setGroupUnread;
+
+
+// --- Attendre socket + données initiales + images/pp, puis retirer le loader
+(function bootstrap(){
+  const done = () => {
+    document.body.classList.remove('booting');
+    const ld = document.getElementById('boot-loader');
+    if (ld) ld.remove();
+  };
+
+  const whenSocket = new Promise((res) => {
+    const s = window.socket;
+    if (s?.connected) return res();
+    s?.once?.('connect', res);
+    // filet de sécurité si pas de socket ou très long
+    setTimeout(res, 5000);
+  });
+
+  // Tâches de boot (ajoute seulement celles qui existent)
+  const tasks = [whenSocket];
+
+  if (typeof window.loadDiscussions === 'function') {
+    // charge la liste de discussions (pas besoin d’auto-open)
+    tasks.push(window.loadDiscussions(false));
+  }
+  if (typeof window.loadGroups === 'function') {
+    // version callback : resolve quand la liste est passée au cb
+    tasks.push(new Promise((r) => window.loadGroups(() => r())));
+  }
+  if (typeof window.loadContacts === 'function') {
+    // pas obligatoire pour l’écran d’accueil, mais on peut précharger
+    tasks.push(window.loadContacts(false));
+  }
+
+  // Attendre les images <img> et les background-image (pp, logos…)
+  const imagesReady = () => {
+    const urls = new Set();
+
+    // <img>
+    document.querySelectorAll('img').forEach(img => { if (img.src) urls.add(img.src); });
+
+    // background-image en inline style (ex: .pp)
+    document.querySelectorAll('[style*="background-image"]').forEach(el => {
+      const m = el.style.backgroundImage && el.style.backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+      if (m && m[1]) urls.add(m[1]);
+    });
+
+    if (!urls.size) return Promise.resolve();
+
+    return Promise.allSettled(
+      Array.from(urls).map(src => new Promise(resolve => {
+        const im = new Image();
+        im.onload = im.onerror = resolve;
+        im.src = src;
+      }))
+    );
+  };
+
+  // Ordre : socket + data, puis images (les pp arrivent après la data)
+  Promise.allSettled(tasks)
+    .then(imagesReady)
+    .then(done)
+    .catch(done); // ne bloque jamais l’affichage final
+})();

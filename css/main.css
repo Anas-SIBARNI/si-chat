@@ -48,3 +48,15 @@
 
 /* media */
 @import url('./objects/_media.css');
+
+
+/* ===== Boot loader ===== */
+body.booting .app-container { visibility: hidden; }
+
+#boot-loader{
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--panel, #0f172a);
+  color: #fff; font-weight: 600; font-size: 18px; letter-spacing: .3px;
+  z-index: 9999;
+}
