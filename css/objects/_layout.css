@@ -22,8 +22,6 @@
  .sidebar  { grid-column: 1; grid-row: 1; border-right: 1px solid var(--border); z-index: 2; }
  .contacts { grid-column: 2; grid-row: 1; border-right: 1px solid var(--border); z-index: 1; }
  .profile  { grid-column: 4; grid-row: 1; border-left:  1px solid var(--border); z-index: 1; }
- 
- /* zone chat */
  .chat {
    grid-column: 3;
    grid-row: 1;

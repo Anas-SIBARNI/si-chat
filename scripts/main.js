@@ -269,64 +269,101 @@ window.setGroupUnread  = setGroupUnread;
 
 
 // --- Attendre socket + données initiales + images/pp, puis retirer le loader
-(function bootstrap(){
-  const done = () => {
+(function bootstrapProgress2Phases(){
+  const percentEl = () => document.getElementById('boot-percent');
+  const fillEl    = () => document.querySelector('.boot-fill');
+
+  const W_DATA = 40;  // % réservé aux données (socket+listes)
+  const W_IMG  = 60;  // % réservé aux images/pp
+
+  let dataTotal = 0, dataDone = 0;
+  let imgTotal  = 0, imgDone  = 0;
+  let lastPct   = 0;
+  let finished  = false;
+
+  const update = () => {
+    const pData = dataTotal ? (dataDone / dataTotal) : 1;
+    const pImg  = imgTotal  ? (imgDone  / imgTotal)  : 0;
+    let pct = Math.round(pData * W_DATA + pImg * W_IMG);
+    if (pct < lastPct) pct = lastPct;        // jamais à rebours
+    lastPct = pct;
+    if (percentEl()) percentEl().textContent = pct + '%';
+    if (fillEl()) fillEl().style.width = pct + '%';
+    if (pct >= 100 && !finished) finish();
+  };
+
+  const finish = () => {
+    finished = true;
     document.body.classList.remove('booting');
     const ld = document.getElementById('boot-loader');
     if (ld) ld.remove();
   };
 
-  const whenSocket = new Promise((res) => {
+  // ---- Phase 1 : données (déclare TOTAL une fois, ne change plus)
+  const tasks = [];
+
+  // Socket
+  const whenSocket = new Promise(res => {
     const s = window.socket;
     if (s?.connected) return res();
-    s?.once?.('connect', res);
-    // filet de sécurité si pas de socket ou très long
-    setTimeout(res, 5000);
+    let done = false;
+    const ok = () => { if (!done){ done = true; res(); } };
+    s?.once?.('connect', ok);
+    setTimeout(ok, 5000); // filet
+  });
+  tasks.push(whenSocket);
+
+  // Discussions
+  if (typeof window.loadDiscussions === 'function') {
+    tasks.push(Promise.resolve(window.loadDiscussions(false)));
+  }
+
+  // Groupes (callback → promesse)
+  if (typeof window.loadGroups === 'function') {
+    tasks.push(new Promise(r => window.loadGroups(() => r())));
+  }
+
+  // Contacts (optionnel)
+  if (typeof window.loadContacts === 'function') {
+    tasks.push(Promise.resolve(window.loadContacts(false)));
+  }
+
+  dataTotal = tasks.length || 1;
+  update();
+
+  // incrément à la résolution de chaque task
+  tasks.forEach(p => p.finally(() => { dataDone++; update(); }));
+
+  // ---- Quand les données sont finies, Phase 2 : images/pp
+  Promise.allSettled(tasks).then(() => {
+    const urls = collectImageURLs();
+    imgTotal = urls.length;
+    update(); // si 0 image, on terminera au prochain update
+
+    if (!imgTotal) return; // rien à précharger
+
+    return Promise.allSettled(urls.map(src => new Promise(resolve => {
+      const im = new Image();
+      im.onload = im.onerror = () => { imgDone++; update(); resolve(); };
+      im.decoding = 'async';
+      im.src = src; // pas d’anti-cache ici → évite des sauts
+    })));
+  }).finally(() => {
+    // filet de sécurité global : ne pas bloquer l'utilisateur
+    setTimeout(() => { if (!finished) finish(); }, 12000);
   });
 
-  // Tâches de boot (ajoute seulement celles qui existent)
-  const tasks = [whenSocket];
-
-  if (typeof window.loadDiscussions === 'function') {
-    // charge la liste de discussions (pas besoin d’auto-open)
-    tasks.push(window.loadDiscussions(false));
-  }
-  if (typeof window.loadGroups === 'function') {
-    // version callback : resolve quand la liste est passée au cb
-    tasks.push(new Promise((r) => window.loadGroups(() => r())));
-  }
-  if (typeof window.loadContacts === 'function') {
-    // pas obligatoire pour l’écran d’accueil, mais on peut précharger
-    tasks.push(window.loadContacts(false));
-  }
-
-  // Attendre les images <img> et les background-image (pp, logos…)
-  const imagesReady = () => {
-    const urls = new Set();
-
+  function collectImageURLs(){
+    const set = new Set();
     // <img>
-    document.querySelectorAll('img').forEach(img => { if (img.src) urls.add(img.src); });
-
-    // background-image en inline style (ex: .pp)
+    document.querySelectorAll('img').forEach(img => { if (img.src) set.add(img.src); });
+    // background-image inline (pp, logos…)
     document.querySelectorAll('[style*="background-image"]').forEach(el => {
       const m = el.style.backgroundImage && el.style.backgroundImage.match(/url\(["']?(.*?)["']?\)/);
-      if (m && m[1]) urls.add(m[1]);
+      if (m && m[1]) set.add(m[1]);
     });
-
-    if (!urls.size) return Promise.resolve();
-
-    return Promise.allSettled(
-      Array.from(urls).map(src => new Promise(resolve => {
-        const im = new Image();
-        im.onload = im.onerror = resolve;
-        im.src = src;
-      }))
-    );
-  };
-
-  // Ordre : socket + data, puis images (les pp arrivent après la data)
-  Promise.allSettled(tasks)
-    .then(imagesReady)
-    .then(done)
-    .catch(done); // ne bloque jamais l’affichage final
+    return Array.from(set);
+  }
 })();
+
+

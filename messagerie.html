@@ -10,8 +10,12 @@
 </head>
 
 <body class="booting">
-  <div id="boot-loader" role="status" aria-live="polite">Chargement...</div>
-  <div class="app-container">
+  <div id="boot-loader" role="status" aria-live="polite">
+    <div class="boot-box">
+      <div id="boot-text">Chargement… <span id="boot-percent">0%</span></div>
+      <div class="boot-bar"><div class="boot-fill" style="width:0%"></div></div>
+    </div>
+  </div>  <div class="app-container">
 <!-- Sidebar -->
 <aside class="sidebar">
   <div class="sidebar__logo">
