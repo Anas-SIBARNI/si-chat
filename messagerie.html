@@ -20,9 +20,9 @@
 
   <nav class="sidebar__nav">
     <ul>
-      <li id="nav-discussions" class="active"><a href="#" data-label="Discussions"><span class="btn-label">D</span></a></li>
-      <li id="nav-groups"><a href="#" data-label="Groupes"><span class="btn-label">G</span></a></li>
-      <li id="nav-contacts"><a href="#" data-label="Contacts"><span class="btn-label">C</span></a></li>
+      <li id="nav-discussions" class="active"><a href="#" data-label="Discussions"><span class="btn-label"><img src="img/letter.png" alt="D"></span></a></li>
+      <li id="nav-groups"><a href="#" data-label="Groupes"><span class="btn-label"><img src="img/3bubbles.png" alt="G"></span></a></li>
+      <li id="nav-contacts"><a href="#" data-label="Contacts"><span class="btn-label"><img src="img/key.png" alt="C"></span></a></li>
     </ul>
   </nav>
   
@@ -67,7 +67,7 @@
       <section id="contacts-section" class="hidden" aria-label="Contacts" style="display:none;">
         <div class="tabs">
           <div class="nav">
-            <button id="tab-online"  class="active" onclick="switchTab('online')">En ligne</button>
+            <button id="tab-online" class="active" onclick="switchTab('online')">En ligne</button>
             <button id="tab-all"                 onclick="switchTab('all')">Tous</button>
             <button id="tab-pending"             onclick="switchTab('pending')">En attente</button>
             <button id="tab-add"                 onclick="switchTab('add')">Ajouter</button>
@@ -87,6 +87,8 @@
           <div class="pp" id="profile-pp" style="width:72px;height:72px;border-radius:50%;background:#ddd;background-size:cover;background-position:center;"></div>
           <h3 id="profile-name" style="margin:12px 0 4px 0;">@username</h3>
           <p id="profile-description" style="margin:0;color:#555;">Aucune description</p>
+          <p>Contact en commun : X</p>
+          <p>Groupes en commun : X</p>
         </div>
       </aside>
   </div>

@@ -170,6 +170,8 @@ async function boot() {
     );
     // 2) Poser les compteurs non-lus une fois le DOM prêt
     window.loadUnread?.();
+    window.loadGroupUnread?.();
+
   } catch(e){ console.error("loadContacts/loadUnread", e); }
 }
 

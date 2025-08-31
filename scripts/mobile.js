@@ -140,7 +140,7 @@
       initDefaultMode();
       bindSidebarNav();
       patchOpeners();
-      ensureHamburgers();
+      //ensureHamburgers();
       window.addEventListener('resize', () => {
         // si on redevient desktop, on nettoie l’état
         if (!IS_MOBILE()) {

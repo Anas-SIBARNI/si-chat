@@ -36,9 +36,16 @@
       window.socket = socket;
 
       // (re)enregistrement de l'utilisateur à chaque connexion
-      socket.on("connect", () => {
+      socket.on("connect", async () => {
         if (userId) socket.emit("registerUser", N(userId));
+        try {
+          const groups = await fetch(`${API}/groups/${userId}`).then(r => r.json());
+          groups.forEach(g => socket.emit("joinGroup", N(g.id)));
+        } catch (e) {
+          console.warn("[socket] auto-join groups failed", e);
+        }
       });
+      
 
       // logs utiles
       socket.on("connect_error", (err) => console.warn("[socket] connect_error:", err?.message || err));
