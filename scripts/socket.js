@@ -109,7 +109,14 @@
       const groupId   = N(data?.groupId);
       const senderId  = N(data?.senderId);
       const activeGid = N(window.activeGroupId);
-      if (groupId !== activeGid) return;
+
+      // groupe non ouvert 
+      if (groupId !== activeGid) {
+        const b = document.getElementById(`g-unread-${groupId}`);
+        const cur = b && !b.classList.contains("hidden") ? parseInt(b.textContent, 10) : 0;
+        if (typeof setGroupUnread === "function") setGroupUnread(groupId, cur + 1);
+        return;
+      }
 
       let profile = userCache.get(senderId);
       if (!profile && typeof window.getUserProfileSafe === "function") {

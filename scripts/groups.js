@@ -21,12 +21,21 @@ function loadGroups(cb) {
         if (!list) return;
         list.innerHTML = "";
         groups.forEach(g => {
-          const div = document.createElement("div");
-          div.classList.add("contact-item");
-          div.textContent = "💬 " + g.name;
-          div.onclick = () => openGroupChat(g.id, g.name);
-          list.appendChild(div);
-        });
+                  const div = document.createElement("div");
+                  div.classList.add("contact-item");
+                  div.dataset.groupId = g.id;
+                  div.innerHTML = `
+                    <div class="icon">💬</div>
+                    <div class="labels"><strong>${(g.name || "").replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}</strong></div>
+                    <div class="end">
+                      <span id="g-unread-${g.id}" class="badge hidden">0</span>
+                    </div>
+                  `;
+                  div.onclick = () => openGroupChat(g.id, g.name);
+                  list.appendChild(div);
+                });
+                // Charger les compteurs après insertion DOM
+                window.loadGroupUnread?.();
       }
     })
     .catch(err => console.error("[groups] loadGroups:", err));
@@ -176,6 +185,18 @@ function openGroupChat(groupId, groupName) {
       scrollChatToBottom({ smooth: false });
     })
     .catch(err => console.error("[groups] history:", err));
+
+
+    // Remettre le badge à 0 côté UI
+    window.setGroupUnread?.(groupId, 0);
+
+    // Informer le serveur (mettra last_read_at à NOW)
+    fetch(`${API}/groups/${groupId}/seen`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId })
+    }).catch(console.warn);
+
 
   // IMPORTANT : ne pas overrider onsubmit ici.
   // L’envoi passe par bindSendForm() (déjà appelé par discussions.js / main.js)

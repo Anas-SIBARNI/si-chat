@@ -131,17 +131,11 @@ function bindSendForm() {
     const content = (input.value || "").trim();
     if (!content) return;
 
-    // affichage optimiste
-    displayMessage({ senderId: userId, content });
     input.value = "";
 
     try {
       if (activeContactId) {
-        await fetch(`${API}/private-message`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ senderId: userId, receiverId: activeContactId, content })
-        });
+        
         // émettre via socket global si dispo
         window.socket?.emit?.("privateMessage", { senderId: userId, receiverId: activeContactId, content });
         if (typeof window.updateConversationSnippet === "function") {
@@ -150,6 +144,7 @@ function bindSendForm() {
 
       } else if (activeGroupId) {
         window.socket?.emit?.("groupMessage", { senderId: userId, groupId: activeGroupId, content });
+        
       }
     } catch (err) {
       console.error("[main] Erreur envoi :", err);
@@ -237,6 +232,17 @@ function formatChatTime(ts) {
     ? d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     : d.toLocaleDateString([], { day: "2-digit", month: "2-digit" }); // JJ/MM
 }
+async function loadGroupUnread(){
+  const rows = await fetch(`${API}/groups/${userId}/unread-counts`).then(r=>r.json());
+  rows.forEach(r=> setGroupUnread(r.group_id, r.unread_count));
+}
+function setGroupUnread(gid, n){
+  const el = document.getElementById(`g-unread-${gid}`);
+  if(!el) return;
+  if(n>0){ el.classList.remove('hidden'); el.textContent = n; }
+  else   { el.classList.add('hidden'); el.textContent = 0; }
+}
+
 
 
 /* ------------------------------
@@ -256,3 +262,5 @@ window.username       = username;
 window.loadUnread     = loadUnread;
 window.updateConversationSnippet = updateConversationSnippet;
 window.formatChatTime = formatChatTime;
+window.loadGroupUnread = loadGroupUnread;
+window.setGroupUnread  = setGroupUnread;

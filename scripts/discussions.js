@@ -130,7 +130,6 @@ async function loadPrivateDiscussion(contactId, contactName) {
    Sélection d’un contact (événement)
 ---------------------------------- */
 
-// Garde-fou : s’assurer qu’un conteneur global existe
 if (typeof window.currentDM === "undefined") {
   window.currentDM = null;
 }
