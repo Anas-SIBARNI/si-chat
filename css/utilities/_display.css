@@ -1,0 +1,9 @@
+/* ===== Utilities display (responsive helpers) ===== */
+@media (max-width: 768px) {
+    .hide-sm { display: none !important; }
+    .show-sm { display: initial !important; }
+  }
+  @media (min-width: 769px) {
+    .show-sm { display: none !important; }
+  }
+  

@@ -72,3 +72,27 @@
   background-color: var(--panel, rgba(30, 41, 59, .75));
   border: 1px solid var(--block-border, rgba(255,255,255,.1));
 }
+
+
+/* ===== Messagerie : adaptations mobiles ===== */
+@media (max-width: 768px) {
+  .contacts { padding: 8px; }
+  .chat .chat-header { padding: 12px 14px; }
+  .chat .chat-body   { padding: 10px 12px 0 12px; }
+  .chat .chat-composer { padding: 10px 12px; }
+
+  /* bulles plus “compactes” */
+  .message-bubble { 
+    max-width: 88vw; 
+    font-size: .97rem; 
+    line-height: 1.35;
+  }
+
+  /* liste des conversations : tuiles plus denses */
+  .chat-list .item { padding: 10px 8px; gap: 10px; }
+  .chat-list .item .title { font-size: .98rem; }
+  .chat-list .item .last  { font-size: .88rem; }
+
+  /* user footer (photo + nom en bas de la sidebar) caché en mobile */
+  .user-footer { display: none; }
+}
