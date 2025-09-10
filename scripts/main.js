@@ -268,13 +268,16 @@ window.loadGroupUnread = loadGroupUnread;
 window.setGroupUnread  = setGroupUnread;
 
 
-// --- Attendre socket + données initiales + images/pp, puis retirer le loader
+// --- Loader 2 phases + caps (2s max d’affichage)
 (function bootstrapProgress2Phases(){
   const percentEl = () => document.getElementById('boot-percent');
   const fillEl    = () => document.querySelector('.boot-fill');
 
   const W_DATA = 40;  // % réservé aux données (socket+listes)
   const W_IMG  = 60;  // % réservé aux images/pp
+
+  const HARD_LIMIT_MS   = 1000; // cap global demandé (2s)
+  const TASK_TIMEOUT_MS = 500; // cap par tâche (phase données)
 
   let dataTotal = 0, dataDone = 0;
   let imgTotal  = 0, imgDone  = 0;
@@ -287,17 +290,30 @@ window.setGroupUnread  = setGroupUnread;
     let pct = Math.round(pData * W_DATA + pImg * W_IMG);
     if (pct < lastPct) pct = lastPct;        // jamais à rebours
     lastPct = pct;
-    if (percentEl()) percentEl().textContent = pct + '%';
-    if (fillEl()) fillEl().style.width = pct + '%';
+    try {
+      if (percentEl()) percentEl().textContent = pct + '%';
+      if (fillEl()) fillEl().style.width = pct + '%';
+    } catch {}
     if (pct >= 100 && !finished) finish();
   };
 
   const finish = () => {
     finished = true;
+    // forcer un 100% visuel pour éviter un cut à 27%
+    try {
+      if (percentEl()) percentEl().textContent = '100%';
+      if (fillEl()) fillEl().style.width = '100%';
+    } catch {}
     document.body.classList.remove('booting');
     const ld = document.getElementById('boot-loader');
     if (ld) ld.remove();
   };
+
+  const withTimeout = (p, ms = TASK_TIMEOUT_MS) =>
+    Promise.race([
+      Promise.resolve(p),
+      new Promise(res => setTimeout(res, ms))
+    ]);
 
   // ---- Phase 1 : données (déclare TOTAL une fois, ne change plus)
   const tasks = [];
@@ -309,23 +325,25 @@ window.setGroupUnread  = setGroupUnread;
     let done = false;
     const ok = () => { if (!done){ done = true; res(); } };
     s?.once?.('connect', ok);
-    setTimeout(ok, 5000); // filet
+    setTimeout(ok, 5000); // filet existant
   });
-  tasks.push(whenSocket);
+  tasks.push(withTimeout(whenSocket));
 
   // Discussions
   if (typeof window.loadDiscussions === 'function') {
-    tasks.push(Promise.resolve(window.loadDiscussions(false)));
+    tasks.push(withTimeout(Promise.resolve(window.loadDiscussions(false))));
   }
 
   // Groupes (callback → promesse)
   if (typeof window.loadGroups === 'function') {
-    tasks.push(new Promise(r => window.loadGroups(() => r())));
+    tasks.push(withTimeout(new Promise(r => {
+      try { window.loadGroups(() => r()); } catch { r(); }
+    })));
   }
 
   // Contacts (optionnel)
   if (typeof window.loadContacts === 'function') {
-    tasks.push(Promise.resolve(window.loadContacts(false)));
+    tasks.push(withTimeout(Promise.resolve(window.loadContacts(false))));
   }
 
   dataTotal = tasks.length || 1;
@@ -346,12 +364,15 @@ window.setGroupUnread  = setGroupUnread;
       const im = new Image();
       im.onload = im.onerror = () => { imgDone++; update(); resolve(); };
       im.decoding = 'async';
-      im.src = src; // pas d’anti-cache ici → évite des sauts
+      im.src = src; // pas d’anti-cache → évite des sauts
     })));
   }).finally(() => {
-    // filet de sécurité global : ne pas bloquer l'utilisateur
-    setTimeout(() => { if (!finished) finish(); }, 12000);
+    // cap global (2s max d’affichage)
+    setTimeout(() => { if (!finished) finish(); }, HARD_LIMIT_MS);
   });
+
+  // filet absolu au cas où (indépendant des promesses)
+  setTimeout(() => { if (!finished) finish(); }, HARD_LIMIT_MS);
 
   function collectImageURLs(){
     const set = new Set();
@@ -365,5 +386,3 @@ window.setGroupUnread  = setGroupUnread;
     return Array.from(set);
   }
 })();
-
-

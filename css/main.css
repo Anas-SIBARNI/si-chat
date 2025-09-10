@@ -16,7 +16,6 @@
 @import url('./components/_button.css');
 @import url('./components/_input.css');
 @import url('./components/_tabs.css');
-@import url('./components/_modal.css');
 
 /* Components: messagerie */
 @import url('./components/_pp.css');
@@ -37,7 +36,6 @@
 @import url('./pages/_index.css');
 @import url('./pages/_messagerie.css');
 @import url('./pages/_parametres.css');
-@import url('./pages/_waw.css');
 
 /* Utilities (en dernier) */
 @import url('./utilities/_display.css');
