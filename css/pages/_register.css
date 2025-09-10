@@ -105,28 +105,3 @@ body {
   @media (max-width: 420px){
     .auth-container{ padding: 18px 14px 16px; }
   }
-
-/* ===== Auth pages (login/register) responsive ===== */
-.auth-page {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  padding: 16px;
-}
-
-.auth-card {
-  width: min(480px, 92vw);
-  padding: 20px;
-  border: 1px solid var(--sb-border, rgba(255,255,255,.12));
-  background: var(--panel, rgba(30,41,59,.75));
-  border-radius: 14px;
-  box-shadow: var(--shadow-md, 0 8px 30px rgba(0,0,0,.25));
-}
-
-.auth-card .field { margin-bottom: 12px; }
-.auth-card .actions { margin-top: 16px; }
-
-@media (max-width: 480px) {
-  .auth-card { padding: 16px; }
-  .auth-card input, .auth-card button { font-size: 1rem; }
-}
