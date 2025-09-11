@@ -107,14 +107,3 @@
     gap: 8px;
   }
   
-  /* responsive */
-  @media (max-width: 520px){
-    .pending-item{
-      gap: 10px;
-      padding: 10px 12px;
-    }
-    .pending-item > span{
-      max-width: 50vw;
-    }
-  }
-  

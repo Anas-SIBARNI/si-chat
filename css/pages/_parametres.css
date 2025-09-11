@@ -181,9 +181,3 @@
     }
   }
   
-  /* Responsive léger (le reste est dans objects/_media.css) */
-  @media (max-width: 720px){
-    .settings-container .settings-sidebar { width: 220px; }
-    .settings-container .settings-element { padding: 1.25rem; }
-  }
-  

@@ -155,12 +155,6 @@
     background: transparent;
   }
   
-  /* Petits écrans */
-  @media (max-width: 520px){
-    .contact-checkbox-list{
-      grid-template-columns: 1fr;
-    }
-  }
   
   /* Réduction des animations si préféré */
   @media (prefers-reduced-motion: reduce){

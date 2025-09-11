@@ -100,8 +100,3 @@ body {
     text-decoration: none;
   }
   .auth-container p a:hover{ text-decoration: underline; }
-  
-  /* Petit responsive */
-  @media (max-width: 420px){
-    .auth-container{ padding: 18px 14px 16px; }
-  }

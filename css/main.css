@@ -28,7 +28,7 @@
 @import url('./components/_group_form.css');
 @import url('./components/_add-contact.css');
 @import url('./components/_pending.css');
-@import url('./components/_friends-list.css');
+@import url('./components/_contact-list.css');
 
 
 
@@ -47,17 +47,3 @@
 /* media */
 @import url('./objects/_media.css');
 
-
-/* ===== Boot loader ===== */
-body.booting .app-container { visibility: hidden; }
-
-#boot-loader{
-  position: fixed; inset: 0;
-  display: grid; place-items: center;
-  background: var(--panel, #0f172a);
-  color:#fff; z-index:9999;
-}
-.boot-box{ width:min(380px, 80vw); display:grid; gap:12px; }
-#boot-text{ font-weight:600; letter-spacing:.2px; }
-.boot-bar{ height:8px; background:rgba(255,255,255,.15); border-radius:999px; overflow:hidden; }
-.boot-fill{ height:100%; width:0%; background:#fff; transition: width .25s ease; }

@@ -82,13 +82,6 @@
   filter: none;
 }
 
-/* ===== Responsif ===== */
-@media (max-width: 720px){
-  .input-wrapper{ min-height: 44px; }
-  .input-wrapper input{ padding: .75rem .85rem; font-size: .93rem; }
-  .input-wrapper button{ padding: .7rem .9rem; }
-}
-
 /* motion‑safe */
 @media (prefers-reduced-motion: reduce){
   .input-wrapper,
