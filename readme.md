@@ -1,118 +1,92 @@
-# Messagerie temps réel (Projet perso)
+# si-chat.app --- descriptif technique
 
-Application web de messagerie temps réel avec gestion des discussions privées, groupes, contacts et une expérience 3D immersive d’accueil ("Waw").
+## Vue d'ensemble
 
----
+**si-chat** est une messagerie web temps réel avec : - **Discussions
+privées** et **groupes**.\
+- **Système de contacts** (demandes, acceptation, ouverture auto du
+chat).\
+- **Profil** (pp, description).\
+- **Thème clair/sombre**.\
+- **Chargement court** (≤ 2 s).
 
-## Fonctionnalités
+------------------------------------------------------------------------
 
-### Partie messagerie classique
-- Discussions privées en temps réel (Socket.IO + PostgreSQL).
-- Système de contacts :
-  - Recherche d’utilisateurs.
-  - Envoi / acceptation / refus de demandes.
-  - Ouverture automatique d’une discussion après acceptation.
-- Discussions de groupe :
-  - Création de groupes avec initiateur.
-  - Ajout / suppression de membres.
-  - Messages visibles par tous les membres en temps réel.
-- Gestion du profil utilisateur :
-  - Photo de profil (pp).
-  - Description modifiable.
-  - Paramètres : changer description, mot de passe, email.
-- Mode clair / sombre sur toute l’application.
+## Architecture
 
-### Partie Waw (expérimentale immersive)
-- Accueil 3D interactif (Three.js + GSAP).
-- Tour transparente contenant des bulles de messages animées.
-- Caméra qui monte le long de la tour, zoom sur un bouton pour entrer dans la messagerie.
-- Effets de particules dynamiques.
-- Style givré (mode clair) ou translucide (mode sombre).
-- Transition fluide entre la partie Waw et l’interface principale.
+-   **Frontend** : HTML5, CSS3, JavaScript (Vanilla), Socket.IO client.\
+-   **Temps réel** : WebSocket via **Socket.IO**.\
+-   **Backend** : Node.js + Express, Socket.IO serveur.\
+-   **BDD** : PostgreSQL (comptes, contacts, messages, groupes).\
+-   **Infra** : OVH VPS, domaine **si-chat.app**, **Nginx** (reverse
+    proxy), **PM2** (process manager), **HTTPS** avec Let's Encrypt.
 
----
+------------------------------------------------------------------------
 
-## 🛠️ Technologies utilisées
+## Arborescence
 
-- **Frontend :**
-  - HTML5, CSS3, JavaScript (Vanilla)
-  - Socket.IO (client)
-  - Three.js (3D)
-  - GSAP (animations)
-  
-- **Backend :**
-  - Node.js, Express.js
-  - Socket.IO (serveur)
-  - PostgreSQL (persistance des données)
+**Frontend `messagerie/`**
 
----
+    img/     (pp, visuels)
+    css/     (style global, messagerie, paramètres)
+    scripts/ (auth.js, contacts.js, groups.js, main.js, ui.js, ...)
+    index.html
+    login.html
+    register.html
+    messagerie.html
+    parametres.html
 
-## 📂 Structure du projet
+**Backend `messagerie-backend/`**
 
-```
-.
-├── messagerie/              # Frontend
-│   ├── css/                 # Styles (reset, base, composants, pages…)
-│   ├── scripts/             # JS (auth, contacts, groupes, ui…)
-│   ├── img/                 # Images statiques
-│   ├── index.html           # Accueil Waw
-│   ├── login.html           # Connexion
-│   ├── register.html        # Inscription
-│   ├── messagerie.html      # Interface principale
-│   ├── parametres.html      # Paramètres utilisateur
-│   └── readme.md
-│
-└── messagerie-backend/      # Backend Node.js
-    ├── serveur_auth.js      # Serveur principal
-    ├── package.json
-    ├── package-lock.json
-    └── node_modules/
-```
+    serveur_auth.js   (serveur Express + Socket.IO)
+    package.json
+    package-lock.json
+    node_modules/
 
----
+------------------------------------------------------------------------
 
-## ⚙️ Installation & Lancement
+## Fonctionnalités en place
 
-### 1. Cloner le dépôt
-```bash
-git clone https://gitlab.com/ton-utilisateur/messagerie.git
-cd messagerie
-```
+-   **Auth** : inscription, connexion.\
+-   **Messagerie** : sauvegarde et récupération des messages depuis
+    PostgreSQL, temps réel via Socket.IO.\
+-   **Interface** : pp visibles, liste des conversations privées et groupes.\
+-   **Contacts** : affichage des contacts en ligne et autres
+-   **Groupes** : ouverture par un initiateur, ajout de
+    membres, messages diffusés à tous.\
+-   **Profil / paramètres** : changement du pseudo,mot de passe, changement d'adresse e-mail.
 
-### 2. Backend
-```bash
-cd messagerie-backend
-npm install
-npm start   # ou pm2 start serveur_auth.js
-```
+------------------------------------------------------------------------
 
-### 3. Frontend
-Déployer le contenu du dossier `messagerie/` sur un serveur web (Nginx, Apache ou simple `live-server`).
+## Base de données
 
-### 4. Configuration
-- PostgreSQL doit être configuré avec la base `messagerie` et les tables nécessaires (utilisateurs, contacts, groupes, messages…).
-- Adapter les variables de connexion dans `serveur_auth.js`.
+Tables principales :\
+- `users` → infos compte (username, email, hash, pp, description,
+en_ligne).\
+- `private_messages` → messages privés entre deux utilisateurs.\
+- `groups`, `group_members`, `group_messages` → gestion des groupes.\
+- `contact_requests` → demandes de contacts avec statut.\
+- `dm_read_state` → suivi lecture des DM.
 
----
+Indexes :\
+- `users(username)` unique.\
+- Index sur `contact_requests (to_id, status)`.
 
-## 📸 Aperçu
+------------------------------------------------------------------------
 
-- Messagerie classique (discussions, contacts, groupes)
-- Partie Waw immersive (tour de messages 3D)
+## Déploiement
 
----
+-   **Backend** : Node.js/Express/Socket.IO, lancé avec **PM2**
+    (`pm2 start serveur_auth.js --name si-chat-api`).\
+-   **Frontend** : fichiers statiques servis par **Nginx**\
+-   **Proxy** Nginx pour API (`/api/`) et Socket.IO (`/socket.io/`).\
+-   **HTTPS** : Let's Encrypt configuré, renouvellement auto.\
+-   **PostgreSQL** : hébergé sur le même VPS.
 
-## 📌 Roadmap
+------------------------------------------------------------------------
 
-- [x] Authentification (inscription / connexion).
-- [x] Sauvegarde et affichage des messages privés en temps réel.
-- [ ] Mode clair / sombre.
-- [ ] Gestion complète des contacts (envoi / acceptation / refus).
-- [ ] Groupes (création, ajout/suppression de membres).
-- [ ] Partie Waw (intégration finale avec animations GSAP).
-- [ ] Sécurité supplémentaire (hash mots de passe, validation des données).
+## Git
 
----
+-   Dépôt GitLab.\
 
-## Auteur
-Projet développé par **Anas SIBARNI** (2025).  
+------------------------------------------------------------------------
