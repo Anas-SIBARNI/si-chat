@@ -48,7 +48,7 @@
   font-weight: 700;
   color: #fff;
   background: linear-gradient(135deg, #10b981, #059669); /* ton vert actuel conservé */
-  padding: .9rem 1rem;         /* par défaut : bouton texte */
+  padding: .3rem 0.5rem;         /* par défaut : bouton texte */
   border-radius: 10px;         /* arrondi interne pour un look “pill” */
   margin-right: 6px;           /* petite marge interne au wrapper */
   transition: filter .2s ease, transform .06s ease;
