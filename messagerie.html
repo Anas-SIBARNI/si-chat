@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SI-CHAT</title>
+  <link rel="icon" href="img/favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="css/main.css?v=mobile-4">
+
+</head>
+
+<body class="booting">
+  
+
+    <div id="mobile-block">
+      <div class="mobile-msg">
+        <h1>📱 Version mobile</h1>
+        <p>Pas encore disponible...</p>
+      </div>
+    </div>
+    
+  </div>  <div class="app-container">
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar__logo">
+    <img src="img/bulles3D.png" alt="Logo">
+  </div>
+
+  <nav class="sidebar__nav">
+    <ul>
+      <li id="nav-discussions" class="active"><a href="#" data-label="Discussions"><span class="btn-label"><img src="img/letter.png" alt="D"></span></a></li>
+      <li id="nav-groups"><a href="#" data-label="Groupes"><span class="btn-label"><img src="img/3bubbles.png" alt="G"></span></a></li>
+      <li id="nav-contacts"><a href="#" data-label="Contacts"><span class="btn-label"><img src="img/key.png" alt="C"></span></a></li>
+    </ul>
+  </nav>
+  
+  <a href="parametres.html" class="sidebar__user">
+    <div id="sidebar-pp" class="pp" style="background-image:url('img/default.jpg')"></div>
+    <span id="username">Username</span>
+  </a>  
+</aside>
+
+    
+    <!-- Discussions privées -->
+    <section class="contacts" id="discussions-section">
+      <h2>Discussions</h2>
+      <div id="discussions-list"></div>
+    </section>
+
+    <!-- Groupes -->
+    <section class="contacts" id="group-section" style="display:none;">
+      <h2>Groupes</h2>
+      <div id="user-groups-list"></div>
+    </section>
+
+    <!-- Chat -->
+    <main class="chat messagerie-" id="chat-area">
+      <header class="chat-header">
+        <div class="peer">
+          <!-- (fix) chemin image -->
+          <div class="pp" style="background-image:url('img/default.jpg')"></div>
+        </div>
+      </header>
+
+      <div class="chat-body" id="chat-body"></div>
+
+      <form class="chat-footer" id="chat-form" autocomplete="off">
+        <div class="input-wrapper">
+          <input type="text" id="message-input" placeholder="Écris ton message..." autocomplete="off">
+          <button type="submit" id="send-btn"><img src="img/letter.png" alt="Envoyer" height="30" width="30"></button>
+        </div>
+      </form>
+
+      <!-- SECTION CONTACTS CONTACTc(MASQUÉE PAR DÉFAUT) -->
+      <section id="contacts-section" class="hidden" aria-label="Contacts" style="display:none;">
+        <div class="tabs">
+          <div class="nav">
+            <button id="tab-online" class="active" onclick="switchTab('online')">En ligne</button>
+            <button id="tab-all"                 onclick="switchTab('all')">Tous</button>
+            <button id="tab-pending"             onclick="switchTab('pending')">En attente</button>
+            <button id="tab-add"                 onclick="switchTab('add')">Ajouter</button>
+            <button id="tab-groups"              onclick="switchTab('groups')">Groupes</button>
+          </div>
+        </div>
+
+        <div id="tab-content">
+          <!-- Contenu injecté par switchTab(tab) -->
+        </div>
+      </section>
+    </main>
+
+      <!-- Panneau fiche profil (droite) -->
+      <aside id="profile-panel" class="profile profile-panel" aria-label="Fiche profil de l'interlocuteur">
+        <div id="profile-block">
+          <div class="pp" id="profile-pp" style="width:72px;height:72px;border-radius:50%;background:#ddd;background-size:cover;background-position:center;"></div>
+          <h3 id="profile-name" style="margin:12px 0 4px 0;">@username</h3>
+          <p id="profile-description" style="margin:0;color:#555;">Aucune description</p>
+          <p>Contact en commun : X</p>
+          <p>Groupes en commun : X</p>
+        </div>
+      </aside>
+  </div>
+
+  <script>
+    window.API_BASE = "/api";
+    window.API = window.API_BASE; // compat pour du code qui utilise "API"
+  </script>
+  
+  <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" crossorigin="anonymous"></script>
+
+  <script src="scripts/socket.js"></script>
+  <script src="scripts/discussions.js"></script>
+  <script src="scripts/contacts.js"></script>
+  <script src="scripts/groups.js"></script>
+  <script src="scripts/navigation.js"></script>
+  <script src="scripts/ui.js"></script>
+  <script src="scripts/mobile.js"></script>
+
+  
+  <script src="scripts/main.js"></script>
+
+</body>
+</html>

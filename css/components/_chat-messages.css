@@ -1,0 +1,46 @@
+/* ===== Liste des messages ===== */
+.message-list,
+.private-message-list {
+  background-color: var(--panel, #1f1f23);
+  padding: var(--space-md, 1rem);
+  border-radius: var(--radius-lg, 10px);
+  max-height: 400px;
+  overflow-y: auto;
+  margin-bottom: var(--space-md, 1rem);
+}
+
+/* Chaque message */
+.message-list div,
+.private-message-list div {
+  padding: var(--space-sm, 0.6rem) var(--space-md, 1rem);
+  margin-bottom: var(--space-xs, 0.5rem);
+  border-radius: var(--radius-md, 10px);
+  max-width: 75%;
+  line-height: 1.45;
+  word-wrap: break-word;
+  font-size: var(--text-sm, 0.95rem);
+  box-sizing: border-box;
+}
+
+/* ===== Messages envoyés (moi) ===== */
+.private-message-list div[data-owner="me"] {
+  background: var(--brand, #2563eb);
+  color: var(--text-on-brand, #fff);
+  margin-left: auto;
+  text-align: right;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.25);
+}
+
+/* ===== Messages reçus (autres) ===== */
+.private-message-list div[data-owner="other"] {
+  background: var(--bubble-incoming, #2e2e35);
+  color: var(--text, #e5e5e5);
+  margin-right: auto;
+  text-align: left;
+}
+
+/* Messages des listes publiques ou de groupe */
+.message-list div {
+  background: var(--bubble-default, #2b2b30);
+  color: var(--text, #fff);
+}

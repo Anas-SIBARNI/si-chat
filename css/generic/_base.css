@@ -1,0 +1,19 @@
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 500 15px/1.45 "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+}
+
+body{
+    font-family: 'Poppins', sans-serif;
+    background-color: #18181B;
+}
+/* Nouveau style basé sur les maquettes fournies */
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #18181B;
+    color: white;
+    margin: 0;
+    padding: 0;
+}
