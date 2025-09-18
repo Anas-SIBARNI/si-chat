@@ -27,17 +27,36 @@ function showSection(targetId) {
     if (!node) return;
     const show = id === targetId;
     node.style.display = show ? "block" : "none";
-    node.classList.toggle("hidden", !show); // compat si tu utilises .hidden en CSS
+    node.classList.toggle("hidden", !show);
   });
 
-  // Masquer totalement le chat quand on est dans la vue Contacts
   const contactsView = (targetId === "contacts-section");
+  
+  // Masquer le chat ET étendre contacts-section
   const header = $d("chat-header") || document.querySelector(".chat-header");
   const body   = $d("chat-body")   || document.querySelector(".chat-body");
   const form   = $d("chat-form")   || document.querySelector(".chat-footer");
-  if (header) header.style.display = contactsView ? "none" : "";
-  if (body)   body.style.display   = contactsView ? "none" : "";
-  if (form)   form.style.display   = contactsView ? "none" : "";
+  const chatArea = $d("chat-area");
+  const contactsSection = $d("contacts-section");
+  
+  if (contactsView) {
+    // Masquer les éléments du chat
+    if (header) header.style.display = "none";
+    if (body)   body.style.display = "none";
+    if (form)   form.style.display = "none";
+    
+    // Étendre contacts-section sur 2 colonnes
+    if (chatArea) chatArea.style.gridColumn = "2 / 4"; // colonnes 2+3
+    if (contactsSection) contactsSection.style.display = "block";
+    
+  } else {
+    // Restaurer l'affichage normal
+    if (header) header.style.display = "";
+    if (body)   body.style.display = "";
+    if (form)   form.style.display = "";
+    if (chatArea) chatArea.style.gridColumn = "3"; // colonne 3 seulement
+    if (contactsSection) contactsSection.style.display = "none";
+  }
 }
 
 /* Active visuellement un bouton d’UI existant (si tu utilises el.*) */
