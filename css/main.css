@@ -1,6 +1,5 @@
 /* Settings */
 @import url('./settings/_variables.css');
-@import url('./settings/_themes.css');
 
 /* Generic */
 @import url('./generic/_reset.css');
