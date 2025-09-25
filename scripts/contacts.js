@@ -198,10 +198,100 @@
       });
   }
 
+/* ---------------------------------
+   Fonction d'ajout de contact (à ajouter dans ui.js)
+---------------------------------- */
+
+function addContact(event) {
+  event.preventDefault();
+  
+  const input = document.getElementById("new-contact");
+  const result = document.getElementById("add-result");
+  
+  if (!input || !result) {
+    console.error("[addContact] Éléments DOM manquants");
+    return;
+  }
+  
+  const username = input.value.trim();
+  if (!username) {
+    result.textContent = "Veuillez saisir un nom d'utilisateur.";
+    result.className = "add-result-message error";
+    return;
+  }
+  
+  const uid = getUID();
+  if (!uid) {
+    result.textContent = "Erreur: utilisateur non connecté.";
+    result.className = "add-result-message error";
+    return;
+  }
+  
+  // Désactiver le bouton et afficher un état de chargement
+  const submitBtn = event.target.querySelector('button[type="submit"]');
+  const originalText = submitBtn.textContent;
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Envoi...";
+  
+  result.textContent = "Envoi de la demande...";
+  result.className = "add-result-message";
+  
+  // Envoyer la demande d'ajout
+  fetch(`${UI_API}/contact-request`, {
+    method: "POST",
+    headers: { 
+      "Content-Type": "application/json" 
+    },
+    credentials: "include",
+    body: JSON.stringify({ 
+      senderId: uid, 
+      receiverUsername: username 
+    })
+  })
+  .then(response => {
+    if (!response.ok) {
+      return response.json().then(err => {
+        // Gestion spécifique des codes d'erreur
+        if (response.status === 404) {
+          throw new Error("Utilisateur introuvable");
+        } else if (response.status === 409) {
+          throw new Error(err.error || "Demande déjà envoyée ou vous êtes déjà amis");
+        } else if (response.status === 400) {
+          throw new Error(err.error || "Données invalides");
+        } else {
+          throw new Error(err.error || "Erreur serveur");
+        }
+      });
+    }
+    return response.json();
+  })
+  .then(data => {
+    result.textContent = "Demande d'ajout envoyée avec succès !";
+    result.className = "add-result-message success";
+    input.value = ""; // Vider le champ
+  })
+  .catch(error => {
+    console.error("[addContact] Erreur:", error);
+    
+    // Affichage du message d'erreur
+    result.textContent = error.message || "Erreur lors de l'envoi de la demande. Réessayez.";
+    result.className = "add-result-message error";
+  })
+  .finally(() => {
+    // Restaurer le bouton
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalText;
+  });
+}
+
+
+
   /* ---------------------------------
      Exports globaux
   ---------------------------------- */
   window.loadContacts = loadContacts;
   window.__markActiveContact = markActive;
   window.repondreDemande = repondreDemande;
+  window.addContact = addContact;
+
 })();
