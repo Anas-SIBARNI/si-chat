@@ -1,4 +1,4 @@
-# si-chat.app --- descriptif technique
+# si-chat.app
 
 ## Vue d'ensemble
 
