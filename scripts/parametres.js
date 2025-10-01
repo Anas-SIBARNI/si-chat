@@ -50,6 +50,32 @@ async function changerNom() {
 }
 
 /* ---------------------------------
+   Changer la descripton utilisateur
+---------------------------------- */
+async function changerDescription() {
+  const uid = getUID(); if (!uid) return;
+  const nouveau = prompt("Entrer une nouvelle description :", localStorage.getItem("description") || "");
+  if (!nouveau) return;
+
+  try {
+    const res = await fetch(`${PARAM_API}/user/${uid}/description`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ description: nouveau })
+    });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+
+    localStorage.setItem("description", nouveau);
+    setText("settings-description", nouveau);
+    setText("display-description", nouveau);
+    alert("Description mise à jour");
+  } catch (e) {
+    console.error("[params] changerDescription:", e);
+    alert("Erreur lors de la mise à jour de la description.");
+  }
+}
+
+/* ---------------------------------
    Changer l'email
 ---------------------------------- */
 async function changerEmail() {
