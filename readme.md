@@ -7,8 +7,6 @@ privées** et **groupes**.\
 - **Système de contacts** (demandes, acceptation, ouverture auto du
 chat).\
 - **Profil** (pp, description).\
-- **Thème clair/sombre**.\
-- **Chargement court** (≤ 2 s).
 
 ------------------------------------------------------------------------
 
@@ -48,12 +46,10 @@ chat).\
 ## Fonctionnalités en place
 
 -   **Auth** : inscription, connexion.\
--   **Messagerie** : sauvegarde et récupération des messages depuis
-    PostgreSQL, temps réel via Socket.IO.\
+-   **Messagerie** : sauvegarde et récupération des messages depuis PostgreSQL, temps réel via Socket.IO.\
 -   **Interface** : pp visibles, liste des conversations privées et groupes.\
 -   **Contacts** : affichage des contacts en ligne et autres, ajout de contact, accepter/refuser demande
--   **Groupes** : ouverture par un initiateur, ajout de
-    membres, messages diffusés à tous.\
+-   **Groupes** : ouverture par un initiateur, messages diffusés à tous.\
 -   **Profil / paramètres** : changement du pseudo, du mot de passe, de l'adresse e-mail.
 
 ------------------------------------------------------------------------
