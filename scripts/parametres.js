@@ -181,6 +181,7 @@ function logout() {
    Exports (si appelés via HTML)
 ---------------------------------- */
 window.changerNom        = changerNom;
+window.changerDescription= changerDescription;
 window.changerEmail      = changerEmail;
 window.changerMotDePasse = changerMotDePasse;
 window.changerPP         = changerPP;

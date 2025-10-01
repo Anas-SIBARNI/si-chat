@@ -43,72 +43,6 @@ async function login(email, password) {
 }
 
 /* ---------------------------------
-   Profil (description / password / email)
----------------------------------- */
-async function editDescription() {
-  const uid = getUserId();
-  if (!uid) { alert("Non connecté."); return; }
-
-  const next = prompt("Nouvelle description :");
-  if (next === null) return;
-
-  try {
-    const res = await fetch(`${AUTH_API}/user/${uid}/description`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ description: next })
-    });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    alert("Description mise à jour");
-  } catch (e) {
-    console.error("[auth] editDescription:", e);
-    alert("Erreur");
-  }
-}
-
-async function editPassword() {
-  const uid = getUserId();
-  if (!uid) { alert("Non connecté."); return; }
-
-  const pwd = prompt("Nouveau mot de passe :");
-  if (!pwd) return;
-
-  try {
-    const res = await fetch(`${AUTH_API}/user/${uid}/password`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password: pwd })
-    });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    alert("Mot de passe mis à jour");
-  } catch (e) {
-    console.error("[auth] editPassword:", e);
-    alert("Erreur");
-  }
-}
-
-async function editEmail() {
-  const uid = getUserId();
-  if (!uid) { alert("Non connecté."); return; }
-
-  const mail = prompt("Nouvelle adresse email :");
-  if (!mail) return;
-
-  try {
-    const res = await fetch(`${AUTH_API}/user/${uid}/email`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: mail })
-    });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    alert("Email mis à jour");
-  } catch (e) {
-    console.error("[auth] editEmail:", e);
-    alert("Erreur");
-  }
-}
-
-/* ---------------------------------
    Déconnexion
 ---------------------------------- */
 async function logout() {
@@ -128,7 +62,4 @@ async function logout() {
    Exports globaux (si appelés via HTML)
 ---------------------------------- */
 window.login           = login;
-window.editDescription = editDescription;
-window.editPassword    = editPassword;
-window.editEmail       = editEmail;
 window.logout          = logout;
