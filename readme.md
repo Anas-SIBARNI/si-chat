@@ -2,7 +2,7 @@
 
 ## Vue d'ensemble
 
-**si-chat** est une messagerie web temps réel avec : - **Discussions
+- **si-chat** est une messagerie web temps réel avec : - **Discussions
 privées** et **groupes**.\
 - **Système de contacts** (demandes, acceptation, ouverture auto du
 chat).\
