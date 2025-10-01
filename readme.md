@@ -1,4 +1,4 @@
-# si-chat.app --- descriptif technique
+# si-chat.app
 
 ## Vue d'ensemble
 
@@ -51,10 +51,10 @@ chat).\
 -   **Messagerie** : sauvegarde et récupération des messages depuis
     PostgreSQL, temps réel via Socket.IO.\
 -   **Interface** : pp visibles, liste des conversations privées et groupes.\
--   **Contacts** : affichage des contacts en ligne et autres
+-   **Contacts** : affichage des contacts en ligne et autres, ajout de contact, accepter/refuser demande
 -   **Groupes** : ouverture par un initiateur, ajout de
     membres, messages diffusés à tous.\
--   **Profil / paramètres** : changement du pseudo,mot de passe, changement d'adresse e-mail.
+-   **Profil / paramètres** : changement du pseudo, du mot de passe, de l'adresse e-mail.
 
 ------------------------------------------------------------------------
 
@@ -68,9 +68,6 @@ en_ligne).\
 - `contact_requests` → demandes de contacts avec statut.\
 - `dm_read_state` → suivi lecture des DM.
 
-Indexes :\
-- `users(username)` unique.\
-- Index sur `contact_requests (to_id, status)`.
 
 ------------------------------------------------------------------------
 
@@ -87,6 +84,7 @@ Indexes :\
 
 ## Git
 
--   Dépôt GitLab.\
+-   Dépôt GitLab
+-   Dépôt Github
 
 ------------------------------------------------------------------------
