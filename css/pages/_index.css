@@ -285,11 +285,11 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 14px 36px rgba(99,102,241,.35);
 }
-.btn-ghost {
+.btn-truc {
   color:#fff; border-color: rgba(255,255,255,.25);
   background: rgba(255,255,255,.05);
 }
-.btn-ghost:hover { border-color:#fff; background: rgba(255,255,255,.12); }
+.btn-truc:hover { border-color:#fff; background: rgba(255,255,255,.12); }
 
 /* Titre wow (sur le span) */
 .wow {
