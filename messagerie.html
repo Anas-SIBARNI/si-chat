@@ -6,52 +6,44 @@
   <title>SI-CHAT</title>
   <link rel="icon" href="img/favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="css/main.css?v=mobile-4">
+
 </head>
 
 <body class="booting">
   
-  <div id="mobile-block">
-    <div class="mobile-msg">
-      <h1>📱 Version mobile</h1>
-      <p>Pas encore disponible...</p>
-    </div>
-  </div>
-    
-  <div class="app-container">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="sidebar__logo">
-        <img src="img/bulles3D.png" alt="Logo">
-      </div>
 
-      <nav class="sidebar__nav">
-        <ul>
-          <li id="nav-discussions" class="active"><a href="#" data-label="Discussions"><span class="btn-label"><img src="img/letter.png" alt="D"></span></a></li>
-          <li id="nav-groups"><a href="#" data-label="Groupes"><span class="btn-label"><img src="img/3bubbles.png" alt="G"></span></a></li>
-          <li id="nav-contacts"><a href="#" data-label="Contacts"><span class="btn-label"><img src="img/key.png" alt="C"></span></a></li>
-        </ul>
-      </nav>
-      
-      <a href="parametres.html" class="sidebar__user">
-        <div id="sidebar-pp" class="pp" style="background-image:url('img/default.jpg')"></div>
-        <span id="username">Username</span>
-      </a>  
-    </aside>
+    <div id="mobile-block">
+      <div class="mobile-msg">
+        <h1>📱 Version mobile</h1>
+        <p>Pas encore disponible...</p>
+      </div>
+    </div>
+    
+  </div>  <div class="app-container">
+<!-- Sidebar -->
+<aside class="sidebar">
+  <div class="sidebar__logo">
+    <img src="img/bulles3D.png" alt="Logo">
+  </div>
+
+  <nav class="sidebar__nav">
+    <ul>
+      <li id="nav-discussions" class="active"><a href="#" data-label="Discussions"><span class="btn-label"><img src="img/letter.png" alt="D"></span></a></li>
+      <li id="nav-groups"><a href="#" data-label="Groupes"><span class="btn-label"><img src="img/3bubbles.png" alt="G"></span></a></li>
+      <li id="nav-contacts"><a href="#" data-label="Contacts"><span class="btn-label"><img src="img/key.png" alt="C"></span></a></li>
+    </ul>
+  </nav>
+  
+  <a href="parametres.html" class="sidebar__user">
+    <div id="sidebar-pp" class="pp" style="background-image:url('img/default.jpg')"></div>
+    <span id="username">Username</span>
+  </a>  
+</aside>
 
     
     <!-- Discussions privées -->
     <section class="contacts" id="discussions-section">
       <h2>Discussions</h2>
-      
-      <!-- NOUVEAU : Bouton Chatbot en haut de la liste -->
-      <div class="discussion-item chatbot-trigger" onclick="openChatbot()" style="border-left: 3px solid #667eea; background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, transparent 100%); cursor: pointer;">
-        <div class="pp" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; font-weight: bold;">AI</div>
-        <div class="discussion-info">
-          <div class="discussion-name" style="font-weight: 600;">Assistant IA</div>
-          <div class="discussion-preview" style="color: #667eea;">Vous avez une question ?</div>
-        </div>
-      </div>
-      
       <div id="discussions-list"></div>
     </section>
 
@@ -65,6 +57,7 @@
     <main class="chat messagerie-" id="chat-area">
       <header class="chat-header">
         <div class="peer">
+          <!-- (fix) chemin image -->
           <div class="pp" style="background-image:url('img/default.jpg')"></div>
         </div>
       </header>
@@ -78,7 +71,7 @@
         </div>
       </form>
 
-      <!-- SECTION CONTACTS -->
+      <!-- SECTION CONTACTS CONTACTc(MASQUÉE PAR DÉFAUT) -->
       <section id="contacts-section" class="hidden" aria-label="Contacts" style="display:none;">
         <div class="tabs">
           <div class="nav">
@@ -96,56 +89,21 @@
       </section>
     </main>
 
-    <!-- NOUVEAU : Vue Chatbot -->
-    <div id="chatbot-view" class="main-view" style="display: none;">
-      <div class="chatbot-header">
-        <button class="back-btn" onclick="closeChatbot()">
-          <span>←</span>
-        </button>
-        <div class="chatbot-title">
-          <div class="chatbot-icon">AI</div>
-          <h2>Assistant IA</h2>
+      <!-- Panneau fiche profil (droite) -->
+      <aside id="profile-panel" class="profile profile-panel" aria-label="Fiche profil de l'interlocuteur">
+        <div id="profile-block">
+          <div class="pp" id="profile-pp" style="width:72px;height:72px;border-radius:50%;background:#ddd;background-size:cover;background-position:center;"></div>
+          <h3 id="profile-name" style="margin:12px 0 4px 0;">@username</h3>
+          <p id="profile-description" style="margin:0;color:#555;">Aucune description</p>
+          <p>Contact en commun : X</p>
+          <p>Groupes en commun : X</p>
         </div>
-        <button class="clear-btn" onclick="clearChatbotHistory()" title="Effacer l'historique">
-          🗑️
-        </button>
-      </div>
-      
-      <div id="chatbot-messages" class="chatbot-messages">
-        <div class="chatbot-message bot">
-          Bonjour ! Vous avez une question ?
-        </div>
-      </div>
-      
-      <div class="chatbot-input-container">
-        <input 
-          type="text" 
-          id="chatbot-input" 
-          placeholder="Pose ta question..."
-          onkeypress="if(event.key==='Enter') sendToChatbot()"
-          autocomplete="off"
-        >
-        <button id="chatbot-send-btn" onclick="sendToChatbot()">
-          ➤
-        </button>
-      </div>
-    </div>
-
-    <!-- Panneau fiche profil (droite) -->
-    <aside id="profile-panel" class="profile profile-panel" aria-label="Fiche profil de l'interlocuteur">
-      <div id="profile-block">
-        <div class="pp" id="profile-pp" style="width:72px;height:72px;border-radius:50%;background:#ddd;background-size:cover;background-position:center;"></div>
-        <h3 id="profile-name" style="margin:12px 0 4px 0;">@username</h3>
-        <p id="profile-description" style="margin:0;color:#555;">Aucune description</p>
-        <p>Contact en commun : X</p>
-        <p>Groupes en commun : X</p>
-      </div>
-    </aside>
+      </aside>
   </div>
 
   <script>
     window.API_BASE = "/api";
-    window.API = window.API_BASE;
+    window.API = window.API_BASE; // compat pour du code qui utilise "API"
   </script>
   
   <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" crossorigin="anonymous"></script>
@@ -156,9 +114,7 @@
   <script src="scripts/groups.js"></script>
   <script src="scripts/navigation.js"></script>
   <script src="scripts/ui.js"></script>
-  
-  <!-- NOUVEAU : Script chatbot -->
-  <script src="scripts/chatbot.js"></script>
+
   
   <script src="scripts/main.js"></script>
 
