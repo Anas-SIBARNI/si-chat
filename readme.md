@@ -2,11 +2,9 @@
 
 ## Vue d'ensemble
 
-- **si-chat** est une messagerie web temps réel avec : - **Discussions
-privées** et **groupes**.\
-- **Système de contacts** (demandes, acceptation, ouverture auto du
-chat).\
-- **Profil** (pp, description).\
+- **si-chat** est une messagerie web temps réel avec : - **Discussions privées**, **groupes**, et **chat bot**.\
+- **Système de contacts** (demandes, acceptation, liste contact en ligne).\
+- **Profil** (photo de profil, description).\
 
 ------------------------------------------------------------------------
 
@@ -25,9 +23,9 @@ chat).\
 
 **Frontend `messagerie/`**
 
-    img/     (pp, visuels)
-    css/     (style global, messagerie, paramètres)
-    scripts/ (auth.js, contacts.js, groups.js, main.js, ui.js, ...)
+    img/    
+    css/     
+    scripts/ 
     index.html
     login.html
     register.html
@@ -51,6 +49,7 @@ chat).\
 -   **Contacts** : affichage des contacts en ligne et autres, ajout de contact, accepter/refuser demande
 -   **Groupes** : ouverture par un initiateur, messages diffusés à tous.\
 -   **Profil / paramètres** : changement du pseudo, du mot de passe, de l'adresse e-mail.
+-   **ChatBot** : discussion avec un assistant IA, possibilité de lui posé des questions sur si-chat et qui est Anas SIBARNI
 
 ------------------------------------------------------------------------
 
@@ -78,9 +77,9 @@ en_ligne).\
 
 ------------------------------------------------------------------------
 
-## Git
+## Dépôts
 
--   Dépôt GitLab
--   Dépôt Github
+-   GitLab
+-   Github
 
 ------------------------------------------------------------------------
